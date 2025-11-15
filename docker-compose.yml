@@ -4,6 +4,5 @@ services:
     container_name: mlproject-container
     volumes:
       - .:/workspace
-      - ./datasets:/workspace/datasets   # <-- map datasets to host
     stdin_open: true
     tty: true
