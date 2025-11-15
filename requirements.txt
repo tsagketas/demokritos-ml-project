@@ -3,3 +3,8 @@ pandas
 # torch
 numpy
 kagglehub
+librosa
+pyAudioAnalysis
+soundfile
+datasets
+tqdm
