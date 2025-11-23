@@ -1,13 +1,10 @@
-"""
-Download and extract CREMA-D dataset from Kaggle
-"""
 import sys
 import zipfile
 import tarfile
+import shutil
 from pathlib import Path
 
 def extract_archive(archive_path, extract_to):
-    """Extract archive with progress"""
     archive_path = Path(archive_path)
     extract_to = Path(extract_to)
     extract_to.mkdir(parents=True, exist_ok=True)
@@ -22,28 +19,50 @@ def extract_archive(archive_path, extract_to):
         return False
     return True
 
+def copy_directory(src, dst):
+    src = Path(src)
+    dst = Path(dst)
+    dst.mkdir(parents=True, exist_ok=True)
+    
+    files = list(src.rglob('*'))
+    total_files = sum(1 for f in files if f.is_file())
+    copied = 0
+    
+    for item in files:
+        if item.is_file():
+            relative_path = item.relative_to(src)
+            target_path = dst / relative_path
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(item, target_path)
+            copied += 1
+            if copied % 100 == 0 or copied == total_files:
+                print(f"Copied {copied}/{total_files} files...")
+
 def main():
     try:
         import kagglehub
         
-        target_dir = Path("datasets/crema")
+        target_dir = Path("datasets/cremad")
         target_dir.mkdir(parents=True, exist_ok=True)
         
         print("Downloading...")
         dataset_path = kagglehub.dataset_download("ejlok1/cremad")
+        dataset_path = Path(dataset_path)
         
-        # Find archives
         archives = []
         for ext in ['*.zip', '*.tar', '*.tar.gz', '*.tgz']:
-            archives.extend(Path(dataset_path).rglob(ext))
+            archives.extend(dataset_path.rglob(ext))
         
         if archives:
             print("Extracting...")
             for archive in archives:
                 extract_archive(archive, target_dir)
                 archive.unlink()
+                print(f"Deleted: {archive.name}")
             print("Done!")
         else:
+            print("Copying files...")
+            copy_directory(dataset_path, target_dir)
             print("Done!")
         
     except ImportError:
