@@ -18,7 +18,7 @@
 
 ## 05_preprocess_features.py
 
-Εδώ καθαρίζουμε και προετοιμάζουμε τα features για training. Αφαιρούμε features με χαμηλό variance (δεν λένε τίποτα), αφαιρούμε highly correlated features (redundancy), και κρατάμε τα σημαντικά. Μετά κάνουμε scaling (standardize) ώστε όλα τα features να είναι στο ίδιο scale. Α
+Εδώ καθαρίζουμε και προετοιμάζουμε τα features για training. Αφαιρούμε features με χαμηλό variance (δεν λένε τίποτα), αφαιρούμε highly correlated features (redundancy), και κρατάμε τα σημαντικά. Μετά κάνουμε scaling (standardize) ώστε όλα τα features να είναι στο ίδιο scale.
 
 **Γιατί όλο αυτό;**
 
