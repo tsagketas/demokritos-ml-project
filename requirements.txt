@@ -8,3 +8,6 @@ pyAudioAnalysis
 soundfile
 datasets
 tqdm
+matplotlib
+eyed3
+pydub
