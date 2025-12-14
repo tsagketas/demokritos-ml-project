@@ -25,6 +25,8 @@ Thumbs.db
 .env.local
 
 # Datasets (too large for git)
-datasets/dusha/crowd_train/
-datasets/dusha/crowd_test/
+datasets/*
+
+# Data
+data/*
 
