@@ -9,5 +9,7 @@ soundfile
 datasets
 tqdm
 matplotlib
+seaborn
+scipy
 eyed3
 pydub
