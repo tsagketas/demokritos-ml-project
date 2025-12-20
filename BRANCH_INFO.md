@@ -31,4 +31,13 @@ git commit -m "μήνυμα"
 
 # Στείλε στο remote
 git push
+<<<<<<< HEAD
 ```
+=======
+```
+
+>>>>>>> origin/giorgos
+
+## giorgos
+- data analysis
+- preprocessing experiments
