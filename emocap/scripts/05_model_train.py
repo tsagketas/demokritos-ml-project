@@ -115,7 +115,8 @@ def train_fold_model(model_name, fold, X_train, y_train, X_val, y_val, models_di
         model.fit(X_train, y_train_enc)
         model._label_encoder = le
     elif model_name == 'svm':
-        model = SVC(**best_params)
+        # Enable probability for soft voting ensemble later
+        model = SVC(**best_params, probability=True)
         model.fit(X_train, y_train)
     elif model_name == 'random_forest':
         model = RandomForestClassifier(**best_params)
@@ -143,8 +144,8 @@ def main():
     models_root = "emocap/models"
     results_root = "emocap/results"
     
-    # Clean up results/models root if needed (only for the models we'll train)
-    model_to_train = 'random_forest'
+    # Change this to 'svm', 'xgboost', etc.
+    model_to_train = 'svm'
     
     fold_model_dir = os.path.join(models_root, model_to_train)
     if os.path.exists(fold_model_dir):

@@ -1,0 +1,42 @@
+import subprocess
+import os
+import sys
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+
+def run_command(command, description):
+    logger.info(f"\n{'='*60}")
+    logger.info(f"🚀 Starting Ensemble Stage: {description}")
+    logger.info(f"Command: {command}")
+    logger.info(f"{'='*60}")
+    try:
+        subprocess.run(command, shell=True, check=True)
+        logger.info(f"✅ Stage Completed: {description}")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"❌ Error during Stage: {description}")
+        logger.error(f"Error details: {e}")
+        sys.exit(1)
+
+def main():
+    logger.info("Starting Ensemble Evaluation Workflow (Hard Voting)")
+    
+    # Define results directory relative to this script
+    results_dir = "emocap/workflows/ensemble_hard/results"
+    
+    # Run Ensemble Evaluation Script with Hard Voting
+    run_command(
+        f"python emocap/scripts/07_ensemble_evaluation.py --method hard --output_dir {results_dir}",
+        "Ensemble Aggregate Evaluation (Hard Voting)"
+    )
+
+    logger.info("\n" + "="*60)
+    logger.info("🎯 ENSEMBLE HARD VOTING WORKFLOW COMPLETE!")
+    logger.info(f"Results available in '{results_dir}/'")
+    logger.info("="*60)
+
+if __name__ == "__main__":
+    main()
+
