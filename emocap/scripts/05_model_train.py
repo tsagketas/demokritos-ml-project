@@ -41,9 +41,10 @@ def get_tuning_function(model_name):
     
     def rf_objective(trial, X_train, y_train, X_val, y_val):
         params = {
-            'n_estimators': trial.suggest_int('n_estimators', 50, 300),
-            'max_depth': trial.suggest_int('max_depth', 5, 30),
-            'min_samples_split': trial.suggest_int('min_samples_split', 2, 10),
+            'n_estimators': trial.suggest_int('n_estimators', 100, 500),
+            'max_depth': trial.suggest_int('max_depth', 10, 50),
+            'min_samples_split': trial.suggest_int('min_samples_split', 2, 20),
+            'class_weight': 'balanced',
             'random_state': 42,
             'n_jobs': -1
         }
@@ -55,11 +56,14 @@ def get_tuning_function(model_name):
         le = LabelEncoder()
         y_train_enc = le.fit_transform(y_train)
         y_val_enc = le.transform(y_val)
+        # Calculate scale_pos_weight estimate for binary or use a sample weight approach
+        # For multi-class, XGBoost doesn't have a single scale_pos_weight
         params = {
-            'n_estimators': trial.suggest_int('n_estimators', 50, 300),
-            'max_depth': trial.suggest_int('max_depth', 3, 15),
-            'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3, log=True),
-            'subsample': trial.suggest_float('subsample', 0.6, 1.0),
+            'n_estimators': trial.suggest_int('n_estimators', 100, 500),
+            'max_depth': trial.suggest_int('max_depth', 3, 10),
+            'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.2, log=True),
+            'subsample': trial.suggest_float('subsample', 0.5, 1.0),
+            'colsample_bytree': trial.suggest_float('colsample_bytree', 0.5, 1.0),
             'random_state': 42,
             'verbosity': 0
         }
@@ -70,8 +74,9 @@ def get_tuning_function(model_name):
     def svm_objective(trial, X_train, y_train, X_val, y_val):
         params = {
             'C': trial.suggest_float('C', 0.1, 100, log=True),
-            'kernel': trial.suggest_categorical('kernel', ['rbf', 'linear', 'poly']),
-            'gamma': trial.suggest_categorical('gamma', ['scale', 'auto']),
+            'kernel': 'rbf',
+            'gamma': trial.suggest_float('gamma', 1e-4, 1e-1, log=True),
+            'class_weight': 'balanced',
             'random_state': 42
         }
         model = SVC(**params)
@@ -102,7 +107,8 @@ def train_fold_model(model_name, fold, X_train, y_train, X_val, y_val, models_di
     
     tuning_func = get_tuning_function(model_name)
     study = optuna.create_study(direction='maximize')
-    study.optimize(lambda trial: tuning_func(trial, X_train, y_train, X_val, y_val), n_trials=15)
+    n_trials = 30 if model_name == 'svm' else 15
+    study.optimize(lambda trial: tuning_func(trial, X_train, y_train, X_val, y_val), n_trials=n_trials)
     
     best_params = study.best_params
     logger.info(f"Best params for {model_name} Fold {fold}: {best_params}")
@@ -115,11 +121,17 @@ def train_fold_model(model_name, fold, X_train, y_train, X_val, y_val, models_di
         model.fit(X_train, y_train_enc)
         model._label_encoder = le
     elif model_name == 'svm':
-        # Enable probability for soft voting ensemble later
-        model = SVC(**best_params, probability=True)
+        # Ensure balanced weights and probability for soft voting
+        final_params = best_params.copy()
+        final_params['class_weight'] = 'balanced'
+        final_params['probability'] = True
+        model = SVC(**final_params)
         model.fit(X_train, y_train)
     elif model_name == 'random_forest':
-        model = RandomForestClassifier(**best_params)
+        # Ensure balanced weights
+        final_params = best_params.copy()
+        final_params['class_weight'] = 'balanced'
+        model = RandomForestClassifier(**final_params)
         model.fit(X_train, y_train)
     else: # decision_tree
         model = DecisionTreeClassifier(**best_params)
@@ -140,12 +152,18 @@ def train_fold_model(model_name, fold, X_train, y_train, X_val, y_val, models_di
     logger.info(f"Model saved to {model_path}")
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, default='random_forest', 
+                        choices=['random_forest', 'svm', 'xgboost', 'decision_tree'],
+                        help='Model to train')
+    args = parser.parse_args()
+
     base_data_path = "data/iemocap/dataset"
     models_root = "emocap/models"
     results_root = "emocap/results"
     
-    # Change this to 'svm', 'xgboost', etc.
-    model_to_train = 'svm'
+    model_to_train = args.model
     
     fold_model_dir = os.path.join(models_root, model_to_train)
     if os.path.exists(fold_model_dir):

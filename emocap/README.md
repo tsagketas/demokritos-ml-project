@@ -1,45 +1,64 @@
-# IEMOCAP Emotion Recognition - Master Model (Random Forest)
+# IEMOCAP Speech Emotion Recognition (LOSO Pipeline)
 
-This project implements a high-performance machine learning pipeline for **Speech Emotion Recognition (SER)** on the IEMOCAP dataset.
+Οδηγός για την εκτέλεση των πειραμάτων Machine Learning στο IEMOCAP χρησιμοποιώντας Leave-One-Session-Out (LOSO).
 
-## 📊 Methodology
-The current approach focuses on training a **Master Model** using the entire IEMOCAP dataset (all 5 sessions) after balancing the classes to ensure maximum generalization across all available speakers.
-
-### Data Strategy:
-- **Resampling:** **SMOTE** (Synthetic Minority Over-sampling Technique) is applied to all sessions to achieve 100% class balance.
-- **Features:** A full set of **136 acoustic features** (MFCC, Spectral, Chroma, etc.) is used, providing a comprehensive representation of audio data.
-- **Cross-Validation:** Hyperparameter tuning is performed using a stratified hold-out set from the combined data.
-
-## 🛠 Pipeline Architecture
-
-### 1. Data Preprocessing (`04_preprocess_data.py`)
-- Standardizes all 5 folds.
-- Applies SMOTE to balance emotion classes.
-- Ensures all features (136) are preserved across all folds for consistency.
-
-### 2. Master Model Training (`05_model_train.py`)
-- Combines data from all 5 folds into a single master dataset.
-- Uses **Optuna** for Bayesian Hyperparameter Optimization.
-- Trains the final **Random Forest** classifier on 100% of the balanced data.
-- Saves the model as `emocap/models/random_forest.pkl`.
-
-### 3. Model Evaluation (`06_model_evaluation.py`)
-- Evaluates the master model on the entire dataset.
-- Generates:
-    - **Final Validation Metrics** (WA, UA, F1).
-    - **Confusion Matrix** (Heatmap).
-    - **Classification Report** per emotion.
-
-## 🚀 How to Run
-To run the full pipeline (Preprocess -> Train -> Evaluate):
-```bash
-python emocap/scripts/emocap_loso_pipeline.py
-```
-
-## 📈 Final Results (Random Forest Master Model)
-- **WA (Accuracy):** 82.9%
-- **UA (Unweighted Accuracy):** 82.8%
-- **F1-Score (Weighted):** 83.0%
+## 🐳 Docker Command Prefix
+Όλες οι εντολές πρέπει να εκτελούνται μέσω του container:
+`docker exec mlproject-container python ...`
 
 ---
-*Results are stored in the `emocap/results/` directory.*
+
+## 🚀 1. Optimized Pipeline (Best Results)
+Αυτό το workflow χρησιμοποιεί τις βέλτιστες τεχνικές: **4-class mapping**, **Agreement Filter (>=2)**, **ANOVA/MI Feature Selection** και **Class Weights** (όχι SMOTE).
+
+### Εκτέλεση για SVM (Προτεινόμενο):
+```bash
+docker exec mlproject-container python emocap/workflows/emocap_loso_optimized_pipeline.py --model svm --mi --k 150
+```
+
+### Εκτέλεση για Random Forest:
+```bash
+docker exec mlproject-container python emocap/workflows/emocap_loso_optimized_pipeline.py --model random_forest --k 60
+```
+
+*Flags:*
+- `--model`: `svm`, `random_forest`, `xgboost`
+- `--mi`: Χρήση Mutual Information (για μη-γραμμικά features)
+- `--anova`: Χρήση ANOVA F-test (πιο γρήγορο)
+- `--k`: Αριθμός features που θα κρατηθούν (π.χ. 60, 100, 150)
+
+---
+
+## ⚖️ 2. SMOTE Pipeline (Baseline)
+Το κλασικό workflow που χρησιμοποιεί SMOTE για εξισορρόπηση των κλάσεων.
+
+```bash
+docker exec mlproject-container python emocap/workflows/emocap_loso_smote_pipeline.py --model svm
+```
+
+---
+
+## 🧠 3. Ensemble (Συνδυασμός Μοντέλων)
+Για να τρέξει το Ensemble, πρέπει πρώτα να έχουν εκπαιδευτεί τα μοντέλα πάνω στα **ίδια ακριβώς features** (ίδιο k και ίδιο selection method).
+
+### Soft Voting (Πιθανότητες - Ίσα Βάρη):
+```bash
+docker exec mlproject-container python emocap/workflows/ensemble_soft/run_ensemble.py --models svm,random_forest
+```
+
+### Weighted Ensemble (Αυτόματος υπολογισμός βαρών βάσει UA):
+Αυτό το workflow διαβάζει το UA κάθε μοντέλου από τα αποτελέσματα και δίνει μεγαλύτερη βαρύτητα στο καλύτερο μοντέλο.
+```bash
+docker exec mlproject-container python emocap/workflows/ensemble_weighted/run_ensemble.py --models svm,random_forest
+```
+
+---
+
+## 📊 Αποτελέσματα
+Τα αποτελέσματα αποθηκεύονται στους αντίστοιχους φακέλους:
+- **Metrics/Summary**: `emocap/results/[model_name]/loso_summary.csv`
+- **Confusion Matrix**: `emocap/results/[model_name]/loso_confusion_matrix.png`
+- **Reports**: `emocap/results/[model_name]/loso_classification_report.csv`
+
+---
+*Σημείωση: Για το IEMOCAP, το SVM με RBF kernel και k=120-150 features συνήθως δίνει το καλύτερο UA (>50%).*

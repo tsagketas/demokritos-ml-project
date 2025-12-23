@@ -20,6 +20,7 @@ import numpy as np
 import argparse
 import joblib
 from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.feature_selection import SelectKBest, f_classif, mutual_info_classif
 from imblearn.over_sampling import SMOTE, RandomOverSampler
 
 # Paths
@@ -153,7 +154,28 @@ def preprocess_fold(fold_num, args):
     X_test = apply_sqrt_transform(X_test, SQRT_TRANSFORM_FEATURES)
     
     selected_features = X_train.columns.tolist()
-    if args.cfs:
+    if args.mi:
+        k = args.k if args.k else 60
+        print(f"  Running Mutual Information feature selection (k={k})...")
+        selector = SelectKBest(mutual_info_classif, k=k)
+        X_train_arr = X_train.fillna(0)
+        selector.fit(X_train_arr, m_train['emotion'])
+        selected_features = X_train.columns[selector.get_support()].tolist()
+        X_train = X_train[selected_features]
+        X_val = X_val[selected_features]
+        X_test = X_test[selected_features]
+        print(f"  MI selected top {len(selected_features)} features")
+    elif args.anova:
+        k = args.k if args.k else 40
+        selector = SelectKBest(f_classif, k=k)
+        X_train_arr = X_train.fillna(0)
+        selector.fit(X_train_arr, m_train['emotion'])
+        selected_features = X_train.columns[selector.get_support()].tolist()
+        X_train = X_train[selected_features]
+        X_val = X_val[selected_features]
+        X_test = X_test[selected_features]
+        print(f"  ANOVA selected top {len(selected_features)} features (k={k})")
+    elif args.cfs:
         selected_features = correlation_based_feature_selection(X_train, m_train['emotion'])
         X_train = X_train[selected_features]
         X_val = X_val[selected_features]
@@ -219,6 +241,9 @@ def main():
     parser.add_argument('--fold', type=int, choices=[1,2,3,4,5], help='Specific fold')
     parser.add_argument('--all', action='store_true', help='Process all 5 folds')
     parser.add_argument('--cfs', action='store_true', help='Enable CFS')
+    parser.add_argument('--anova', action='store_true', help='Enable ANOVA feature selection')
+    parser.add_argument('--mi', action='store_true', help='Enable Mutual Information feature selection')
+    parser.add_argument('--k', type=int, default=40, help='Number of features for Selection')
     parser.add_argument('--resample', type=str, choices=['smote', 'random'], help='Resampling method')
     args = parser.parse_args()
     

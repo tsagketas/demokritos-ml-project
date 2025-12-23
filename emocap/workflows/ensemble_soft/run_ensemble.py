@@ -21,6 +21,12 @@ def run_command(command, description):
         sys.exit(1)
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--models', type=str, default='random_forest,svm,xgboost',
+                        help='Comma-separated list of models to include')
+    args = parser.parse_args()
+
     logger.info("Starting Ensemble Evaluation Workflow (Soft Voting)")
     
     # Define results directory relative to this script
@@ -28,7 +34,7 @@ def main():
     
     # Run Ensemble Evaluation Script with Soft Voting
     run_command(
-        f"python emocap/scripts/07_ensemble_evaluation.py --method soft --output_dir {results_dir}",
+        f"python emocap/scripts/07_ensemble_evaluation.py --method soft --models {args.models} --output_dir {results_dir}",
         "Ensemble Aggregate Evaluation (Soft Voting)"
     )
 

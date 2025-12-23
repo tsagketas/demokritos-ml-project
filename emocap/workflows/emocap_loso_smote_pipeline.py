@@ -21,7 +21,15 @@ def run_command(command, description):
         sys.exit(1)
 
 def main():
-    logger.info("Starting IEMOCAP LOSO Pipeline (Steps 02-06)")
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, default='random_forest', 
+                        choices=['random_forest', 'svm', 'xgboost', 'decision_tree'],
+                        help='Model to train and evaluate')
+    args = parser.parse_args()
+    model_to_run = args.model
+
+    logger.info(f"Starting IEMOCAP LOSO Pipeline for {model_to_run} (Steps 02-06)")
     
     # 2. Create LOSO Folds (Split)
     run_command(
@@ -43,19 +51,19 @@ def main():
 
     # 5. Training (LOSO Per-Fold Training with Optuna)
     run_command(
-        "python emocap/scripts/05_model_train.py",
-        "LOSO Model Training & Tuning (Step 05)"
+        f"python emocap/scripts/05_model_train.py --model {model_to_run}",
+        f"LOSO Model Training & Tuning for {model_to_run} (Step 05)"
     )
 
     # 6. Evaluation (Aggregate LOSO Metrics)
     run_command(
-        "python emocap/scripts/06_model_evaluation.py",
-        "Aggregate LOSO Evaluation & Reports (Step 06)"
+        f"python emocap/scripts/06_model_evaluation.py --model {model_to_run}",
+        f"Aggregate LOSO Evaluation for {model_to_run} (Step 06)"
     )
 
     logger.info("\n" + "="*60)
     logger.info("🎯 LOSO PIPELINE EXECUTION COMPLETE!")
-    logger.info("Results available in 'emocap/results/random_forest/'")
+    logger.info(f"Results available in 'emocap/results/{model_to_run}/'")
     logger.info("="*60)
 
 if __name__ == "__main__":

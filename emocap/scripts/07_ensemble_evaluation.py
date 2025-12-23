@@ -17,6 +17,10 @@ def main():
     parser = argparse.ArgumentParser(description='Ensemble Evaluation for Emotion Classification')
     parser.add_argument('--method', type=str, choices=['hard', 'soft'], required=True, 
                         help='Voting method: hard (majority) or soft (average probabilities)')
+    parser.add_argument('--models', type=str, default='random_forest,svm,xgboost',
+                        help='Comma-separated list of models to include (e.g., svm,random_forest,xgboost)')
+    parser.add_argument('--weights', type=str, default=None,
+                        help='Comma-separated list of weights for soft voting. If "auto", calculates weights based on UA.')
     parser.add_argument('--output_dir', type=str, default=None,
                         help='Directory to save results. If None, uses default results path.')
     args = parser.parse_args()
@@ -33,7 +37,36 @@ def main():
     os.makedirs(ensemble_results_dir, exist_ok=True)
     
     # Models to include in ensemble
-    model_types = ['random_forest']
+    model_types = [m.strip() for m in args.models.split(',')]
+    
+    # Calculate weights
+    weights = None
+    if args.method == 'soft':
+        if args.weights == 'auto':
+            logger.info("Calculating automatic weights based on UA...")
+            uas = []
+            for m_type in model_types:
+                summary_path = os.path.join(results_root, m_type, "loso_summary.csv")
+                if os.path.exists(summary_path):
+                    sdf = pd.read_csv(summary_path)
+                    ua = sdf['UA'].iloc[0]
+                    uas.append(ua)
+                else:
+                    logger.warning(f"Summary not found for {m_type} at {summary_path}. Using default weight 1.0.")
+                    uas.append(1.0)
+            
+            # Normalize weights
+            uas = np.array(uas)
+            weights = uas / np.sum(uas)
+            logger.info(f"Automatic weights: {dict(zip(model_types, weights))}")
+        elif args.weights:
+            weights = [float(w) for w in args.weights.split(',')]
+            if len(weights) != len(model_types):
+                logger.error(f"Number of weights ({len(weights)}) does not match number of models ({len(model_types)})")
+                return
+            weights = np.array(weights) / np.sum(weights)
+            logger.info(f"Manual weights: {dict(zip(model_types, weights))}")
+
     folds = [1, 2, 3, 4, 5]
     
     all_ensemble_preds = []
@@ -105,13 +138,22 @@ def main():
                 ensemble_pred.append(values[np.argmax(counts)])
             ensemble_pred = np.array(ensemble_pred)
         else:
-            # Average Probabilities
-            avg_proba = np.mean(fold_outputs, axis=0)
+            # Average Probabilities (Soft Voting)
+            if weights is not None:
+                # Weighted Soft Voting
+                avg_proba = np.zeros_like(fold_outputs[0])
+                for idx, proba in enumerate(fold_outputs):
+                    avg_proba += proba * weights[idx]
+            else:
+                # Simple Average
+                avg_proba = np.mean(fold_outputs, axis=0)
+                
             best_idx = np.argmax(avg_proba, axis=1)
             
-            # Get class labels from one of the models (e.g., Random Forest)
-            ref_model = joblib.load(os.path.join(models_root, 'random_forest', f"fold_{fold}.pkl"))
-            classes = ref_model.classes_
+            # Get class labels from one of the models (the first one)
+            ref_model_type = model_types[0]
+            ref_model = joblib.load(os.path.join(models_root, ref_model_type, f"fold_{fold}.pkl"))
+            classes = ref_model.classes_ if hasattr(ref_model, 'classes_') else ref_model._label_encoder.classes_
             ensemble_pred = classes[best_idx]
             
         all_ensemble_preds.extend(ensemble_pred)

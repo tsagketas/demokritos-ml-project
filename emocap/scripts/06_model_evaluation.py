@@ -18,7 +18,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def main():
-    model_name = 'random_forest'
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, default='random_forest',
+                        choices=['random_forest', 'svm', 'xgboost', 'decision_tree'],
+                        help='Model to evaluate')
+    args = parser.parse_args()
+
+    model_name = args.model
     models_dir = os.path.join("emocap/models", model_name)
     base_data_path = "data/iemocap/dataset"
     results_dir = os.path.join("emocap/results", model_name)
