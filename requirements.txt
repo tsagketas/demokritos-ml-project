@@ -13,3 +13,6 @@ pydub
 matplotlib
 seaborn
 joblib
+imbalanced-learn
+xgboost
+optuna
