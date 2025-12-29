@@ -1,2 +1,4 @@
 # Datasets (too large for git)
 datasets/*
+# Data
+data/*
