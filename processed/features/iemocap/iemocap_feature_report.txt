@@ -1,0 +1,89 @@
+FEATURE EXTRACTION REPORT
+=========================
+
+Dataset: iemocap
+Total metadata samples: 10039
+Processed samples: 5573
+Dropped samples (other/invalid): 4466
+
+Label distribution:
+  neutral: 1708
+  angry: 1103
+  happy: 1636
+  sad: 1084
+  fear: 40
+  disgust: 2
+
+Feature statistics:
+  Feature vector size: 68
+  Total samples: 5573
+
+Feature names:
+  zcr
+  energy
+  energy_entropy
+  spectral_centroid
+  spectral_spread
+  spectral_entropy
+  spectral_flux
+  spectral_rolloff
+  mfcc_1
+  mfcc_2
+  mfcc_3
+  mfcc_4
+  mfcc_5
+  mfcc_6
+  mfcc_7
+  mfcc_8
+  mfcc_9
+  mfcc_10
+  mfcc_11
+  mfcc_12
+  mfcc_13
+  chroma_1
+  chroma_2
+  chroma_3
+  chroma_4
+  chroma_5
+  chroma_6
+  chroma_7
+  chroma_8
+  chroma_9
+  chroma_10
+  chroma_11
+  chroma_12
+  chroma_std
+  delta zcr
+  delta energy
+  delta energy_entropy
+  delta spectral_centroid
+  delta spectral_spread
+  delta spectral_entropy
+  delta spectral_flux
+  delta spectral_rolloff
+  delta mfcc_1
+  delta mfcc_2
+  delta mfcc_3
+  delta mfcc_4
+  delta mfcc_5
+  delta mfcc_6
+  delta mfcc_7
+  delta mfcc_8
+  delta mfcc_9
+  delta mfcc_10
+  delta mfcc_11
+  delta mfcc_12
+  delta mfcc_13
+  delta chroma_1
+  delta chroma_2
+  delta chroma_3
+  delta chroma_4
+  delta chroma_5
+  delta chroma_6
+  delta chroma_7
+  delta chroma_8
+  delta chroma_9
+  delta chroma_10
+  delta chroma_11
+  delta chroma_12
+  delta chroma_std
