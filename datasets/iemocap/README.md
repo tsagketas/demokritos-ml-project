@@ -18,16 +18,16 @@ Interactive Emotional Dyadic Motion Capture (IEMOCAP) Dataset
 ## Συναισθήματα (Emotion Labels)
 
 - **No Agreement (xxx)** — 2507 *(ασυμφωνία annotators)*
-- **fru** — 1849
-- **neu** — 1708
-- **ang** — 1103
-- **sad** — 1084
-- **exc** — 1041
-- **hap** — 595
-- **sur** — 107
-- **fea** — 40
-- **oth** — 3
-- **dis** — 2
+- **Frustation (fru)** — 1849
+- **Neutral state (neu)** — 1708
+- **Anger (ang)** — 1103
+- **Sadness (sad)** — 1084
+- **Excited (exc)** — 1041
+- **Happiness (hap)** — 595
+- **Surprise (sur)** — 107
+- **Fear (fea)** — 40
+- **Other (oth)** — 3
+- **Disgust (dis)** — 2
 
 
 ## Στήλες Μεταδεδομένων (Metadata Fields)
