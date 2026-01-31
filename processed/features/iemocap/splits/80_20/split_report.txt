@@ -1,0 +1,27 @@
+Split report (stratified 80-20)
+==============================
+
+Total: 5573  Train: 4458  Test: 1115
+
+Label distribution (overall):
+  angry: 1103 (19.8%)
+  disgust: 2 (0.0%)
+  fear: 40 (0.7%)
+  happy: 1636 (29.4%)
+  neutral: 1708 (30.6%)
+  sad: 1084 (19.5%)
+
+Train:
+  angry: 882 (19.8%)
+  disgust: 2 (0.0%)
+  fear: 32 (0.7%)
+  happy: 1309 (29.4%)
+  neutral: 1366 (30.6%)
+  sad: 867 (19.4%)
+
+Test:
+  angry: 221 (19.8%)
+  fear: 8 (0.7%)
+  happy: 327 (29.3%)
+  neutral: 342 (30.7%)
+  sad: 217 (19.5%)
