@@ -1,24 +1,22 @@
 Evaluation report: knn
 ========================================
 
-Accuracy: 0.5668
-F1-score (weighted): 0.5605
-Precision (weighted): 0.5702
-Recall (weighted): 0.5668
-RÂ²: 0.1464
-MSE: 2.4475
-RMSE: 1.5645
-MAE: 0.8816
-MAPE: 53.9163%
+Accuracy: 0.5565
+F1-score (weighted): 0.5519
+Precision (weighted): 0.5588
+Recall (weighted): 0.5565
+R²: 0.1325
+MSE: 0.9033
+RMSE: 0.9504
+MAE: 0.5890
+MAPE: 46.5522%
 
 Confusion matrix:
-Labels: ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad']
+Labels: ['angry', 'happy', 'neutral', 'sad']
 
-     99     0     0    53    60     9  | angry
-      0     0     0     0     0     0  | disgust
-      2     0     0     2     3     1  | fear
-     34     0     0   168    80    45  | happy
-      9     0     0    62   197    74  | neutral
-      4     0     0    15    30   168  | sad
-  ------------------------------------
-  angry disgust  fear happy neutral   sad
+    110    50    55     6  | angry
+     49   143    87    48  | happy
+     12    51   206    73  | neutral
+      7    20    33   157  | sad
+  ------------------------
+  angry happy neutral   sad

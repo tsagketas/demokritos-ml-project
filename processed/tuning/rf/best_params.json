@@ -4,5 +4,5 @@
     "min_samples_leaf": 2,
     "max_depth": 12
   },
-  "best_cv_f1_weighted": 0.5737246811679173
+  "best_cv_f1_weighted": 0.5881252634818475
 }
