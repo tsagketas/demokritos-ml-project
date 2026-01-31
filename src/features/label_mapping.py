@@ -5,8 +5,8 @@ iemocap_label_map = {
     "exc": "happy",
     "sad": "sad",
     "neu": "neutral",
-    "fea": "fear",
-    "dis": "disgust",
+    "fea": "other",
+    "dis": "other",
     "fru": "other",
     "sur": "other",
     "oth": "other",
@@ -19,8 +19,8 @@ cremad_label_map = {
     "HAP": "happy",
     "SAD": "sad",
     "NEU": "neutral",
-    "FEA": "fear",
-    "DIS": "disgust"
+    "FEA": "other",
+    "DIS": "other"
 }
 
 def map_label(dataset, original_label):

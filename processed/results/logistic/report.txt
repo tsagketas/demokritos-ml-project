@@ -1,0 +1,22 @@
+Evaluation report: logistic
+========================================
+
+Accuracy: 0.5989
+F1-score (weighted): 0.5983
+Precision (weighted): 0.5986
+Recall (weighted): 0.5989
+R²: 0.2357
+MSE: 0.7958
+RMSE: 0.8921
+MAE: 0.5248
+MAPE: 38.3469%
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    141    38    39     3  | angry
+     55   173    69    30  | happy
+     18    64   211    49  | neutral
+     10    24    45   138  | sad
+  ------------------------
+  angry happy neutral   sad

@@ -4,6 +4,8 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.svm import SVC
@@ -57,6 +59,8 @@ def main():
         "svm": SVC(C=0.5, kernel="rbf", gamma="scale", random_state=args.seed),
         "knn": KNeighborsClassifier(n_neighbors=15, weights="distance"),
         "dtr": DecisionTreeClassifier(max_depth=12, min_samples_leaf=5, random_state=args.seed),
+        "logistic": LogisticRegression(C=1.0, max_iter=1000, random_state=args.seed),
+        "nb": GaussianNB(),
     }
 
     for name, model in models.items():
