@@ -1,7 +1,7 @@
 ,angry,disgust,fear,happy,neutral,sad
-angry,128,0,0,42,50,1
+angry,120,0,0,49,50,2
 disgust,0,0,0,0,0,0
 fear,1,0,0,3,3,1
-happy,38,0,0,179,81,29
-neutral,9,0,0,57,235,41
-sad,4,0,0,14,66,133
+happy,37,0,0,171,92,27
+neutral,9,0,0,51,238,44
+sad,3,0,0,18,59,137
