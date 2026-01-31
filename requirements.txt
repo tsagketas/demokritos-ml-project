@@ -1,6 +1,6 @@
 scikit-learn
 pandas
-# torch
+torch
 numpy
 kagglehub
 librosa
@@ -8,3 +8,13 @@ pyAudioAnalysis
 soundfile
 datasets
 tqdm
+matplotlib
+seaborn
+eyed3
+pydub
+joblib
+scipy
+imbalanced-learn
+xgboost
+optuna
+torchaudio
