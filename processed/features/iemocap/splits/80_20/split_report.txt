@@ -25,3 +25,5 @@ Test:
   happy: 327 (29.3%)
   neutral: 342 (30.7%)
   sad: 217 (19.5%)
+
+Train/test features normalized (StandardScaler fit on train). scaler.pkl saved.

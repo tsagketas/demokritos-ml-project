@@ -1,12 +1,16 @@
 import argparse
 from pathlib import Path
 
+import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FEATURES_CSV = PROJECT_ROOT / "processed" / "features" / "iemocap" / "iemocap_features.csv"
 SPLITS_DIR = PROJECT_ROOT / "processed" / "features" / "iemocap" / "splits"
+
+NON_FEATURE_COLS = ["label", "file_path", "dataset"]
 
 
 def main():
@@ -16,6 +20,7 @@ def main():
     parser.add_argument("--split", type=str, default="stratified_80_20", choices=["stratified_80_20", "loso"])
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--normalize", action="store_true", help="Fit StandardScaler on train and normalize train/test")
     args = parser.parse_args()
 
     if args.split == "loso":
@@ -40,6 +45,15 @@ def main():
         random_state=args.seed,
     )
 
+    feature_cols = [c for c in train_df.columns if c not in NON_FEATURE_COLS]
+    if args.normalize:
+        scaler = StandardScaler()
+        train_df = train_df.copy()
+        test_df = test_df.copy()
+        train_df[feature_cols] = scaler.fit_transform(train_df[feature_cols])
+        test_df[feature_cols] = scaler.transform(test_df[feature_cols])
+        joblib.dump(scaler, out_dir / "scaler.pkl")
+
     train_path = out_dir / "train.csv"
     test_path = out_dir / "test.csv"
     train_df.to_csv(train_path, index=False)
@@ -62,6 +76,8 @@ def main():
         for lbl, cnt in test_df["label"].value_counts().sort_index().items():
             pct = 100.0 * cnt / len(test_df)
             f.write(f"  {lbl}: {cnt} ({pct:.1f}%)\n")
+        if args.normalize:
+            f.write("\nTrain/test features normalized (StandardScaler fit on train). scaler.pkl saved.\n")
 
 
 if __name__ == "__main__":
