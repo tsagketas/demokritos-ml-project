@@ -7,34 +7,45 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-FEATURES_CSV = PROJECT_ROOT / "processed" / "features" / "iemocap" / "iemocap_features.csv"
-SPLITS_DIR = PROJECT_ROOT / "processed" / "features" / "iemocap" / "splits"
+DEFAULT_OUTPUT = PROJECT_ROOT
+FEATURES_CSV = DEFAULT_OUTPUT / "features" / "iemocap" / "iemocap_features.csv"  # project root: keep dataset subfolder
+SPLITS_DIR = DEFAULT_OUTPUT / "features" / "iemocap" / "splits"
 
 NON_FEATURE_COLS = ["label", "file_path", "dataset"]
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--features-csv", type=Path, default=FEATURES_CSV)
-    parser.add_argument("--out-dir", type=Path, default=SPLITS_DIR)
+    parser.add_argument("--workflow-dir", type=Path, default=None, help="Workflow output root; uses <workflow-dir>/features/...")
+    parser.add_argument("--features-csv", type=Path, default=None)
+    parser.add_argument("--out-dir", type=Path, default=None)
     parser.add_argument("--split", type=str, default="stratified_80_20", choices=["stratified_80_20", "loso"])
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--normalize", action="store_true", help="Fit StandardScaler on train and normalize train/test")
     args = parser.parse_args()
 
+    if args.workflow_dir is not None:
+        base = Path(args.workflow_dir).resolve()
+        features_csv = args.features_csv or (base / "features" / "iemocap_features.csv")
+        out_dir = args.out_dir or (base / "features" / "splits")
+    else:
+        features_csv = args.features_csv or FEATURES_CSV
+        out_dir = args.out_dir or SPLITS_DIR
+    features_csv = Path(features_csv)
+    out_dir = Path(out_dir)
+
     if args.split == "loso":
         raise NotImplementedError("LOSO will be implemented later")
 
-    features_path = Path(args.features_csv)
-    if not features_path.is_file():
-        raise FileNotFoundError(f"Features CSV not found: {features_path}")
+    if not features_csv.is_file():
+        raise FileNotFoundError(f"Features CSV not found: {features_csv}")
 
     split_folder = "80_20" if args.split == "stratified_80_20" else "loso"
-    out_dir = Path(args.out_dir) / split_folder
+    out_dir = out_dir / split_folder
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(features_path)
+    df = pd.read_csv(features_csv)
     if "label" not in df.columns:
         raise ValueError("CSV must contain column 'label' for stratified split.")
 

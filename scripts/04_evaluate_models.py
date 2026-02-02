@@ -22,10 +22,11 @@ from sklearn.metrics import (
 from sklearn.model_selection import learning_curve
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SPLITS_DIR = PROJECT_ROOT / "processed" / "features" / "iemocap" / "splits"
-MODELS_DIR = PROJECT_ROOT / "processed" / "models"
-TUNING_DIR = PROJECT_ROOT / "processed" / "tuning"
-RESULTS_DIR = PROJECT_ROOT / "processed" / "results"
+DEFAULT_OUTPUT = PROJECT_ROOT
+SPLITS_DIR = DEFAULT_OUTPUT / "features" / "iemocap" / "splits"
+MODELS_DIR = DEFAULT_OUTPUT / "models"
+TUNING_DIR = DEFAULT_OUTPUT / "tuning"
+RESULTS_DIR = DEFAULT_OUTPUT / "results"
 
 MODEL_NAMES = ["rf", "xgb", "svm", "knn", "dtr", "logistic", "nb"]
 
@@ -37,32 +38,41 @@ def safe_mape(y_true, y_pred):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-csv", type=Path, default=SPLITS_DIR / "80_20" / "train.csv")
-    parser.add_argument("--test-csv", type=Path, default=SPLITS_DIR / "80_20" / "test.csv")
-    parser.add_argument("--models-dir", type=Path, default=MODELS_DIR)
-    parser.add_argument("--results-dir", type=Path, default=RESULTS_DIR)
+    parser.add_argument("--workflow-dir", type=Path, default=None, help="Workflow output root; uses <workflow-dir>/features/..., models/..., results/...")
+    parser.add_argument("--train-csv", type=Path, default=None)
+    parser.add_argument("--test-csv", type=Path, default=None)
+    parser.add_argument("--models-dir", type=Path, default=None)
+    parser.add_argument("--results-dir", type=Path, default=None)
     parser.add_argument("--n-train-sizes", type=int, default=10)
-    parser.add_argument("--best", action="store_true", help="Use best models from tuning (processed/tuning/<model>/best_model.pkl)")
+    parser.add_argument("--best", action="store_true", help="Use best models from tuning (tuning/<model>/best_model.pkl)")
     args = parser.parse_args()
 
-    train_path = Path(args.train_csv)
-    test_path = Path(args.test_csv)
+    if args.workflow_dir is not None:
+        base = Path(args.workflow_dir).resolve()
+        train_path = args.train_csv or (base / "features" / "splits" / "80_20" / "train.csv")
+        test_path = args.test_csv or (base / "features" / "splits" / "80_20" / "test.csv")
+        models_dir_default = base / "tuning" if args.best else base / "models"
+        results_dir_default = base / "results"
+    else:
+        train_path = args.train_csv or SPLITS_DIR / "80_20" / "train.csv"
+        test_path = args.test_csv or SPLITS_DIR / "80_20" / "test.csv"
+        models_dir_default = TUNING_DIR if args.best else MODELS_DIR
+        results_dir_default = RESULTS_DIR
+    train_path = Path(train_path)
+    test_path = Path(test_path)
+    models_dir = Path(args.models_dir or models_dir_default)
+    results_dir = Path(args.results_dir or results_dir_default)
     if not train_path.is_file():
         raise FileNotFoundError(f"Train CSV not found: {train_path}")
     if not test_path.is_file():
         raise FileNotFoundError(f"Test CSV not found: {test_path}")
 
-    if args.best:
-        models_dir = Path(TUNING_DIR)
-    else:
-        models_dir = Path(args.models_dir)
-    results_dir = Path(args.results_dir)
     le = joblib.load(models_dir / "label_encoder.pkl")
     feature_cols = joblib.load(models_dir / "feature_cols.pkl")
 
     df_train = pd.read_csv(train_path)
     df_test = pd.read_csv(test_path)
-    split_dir = Path(args.test_csv).parent
+    split_dir = Path(test_path).parent
     already_normalized = (split_dir / "scaler.pkl").is_file()
     if already_normalized:
         X_train = df_train[feature_cols]

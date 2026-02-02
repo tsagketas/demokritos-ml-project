@@ -13,24 +13,33 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SPLITS_DIR = PROJECT_ROOT / "processed" / "features" / "iemocap" / "splits"
-MODELS_DIR = PROJECT_ROOT / "processed" / "models"
+DEFAULT_OUTPUT = PROJECT_ROOT
+SPLITS_DIR = DEFAULT_OUTPUT / "features" / "iemocap" / "splits"
+MODELS_DIR = DEFAULT_OUTPUT / "models"
 
 NON_FEATURE_COLS = ["label", "file_path", "dataset"]
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-csv", type=Path, default=SPLITS_DIR / "80_20" / "train.csv")
-    parser.add_argument("--out-dir", type=Path, default=MODELS_DIR)
+    parser.add_argument("--workflow-dir", type=Path, default=None, help="Workflow output root; uses <workflow-dir>/models/...")
+    parser.add_argument("--train-csv", type=Path, default=None)
+    parser.add_argument("--out-dir", type=Path, default=None)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
-    train_path = Path(args.train_csv)
+    if args.workflow_dir is not None:
+        base = Path(args.workflow_dir).resolve()
+        train_path = args.train_csv or (base / "features" / "splits" / "80_20" / "train.csv")
+        out_dir = args.out_dir or (base / "models")
+    else:
+        train_path = args.train_csv or SPLITS_DIR / "80_20" / "train.csv"
+        out_dir = args.out_dir or MODELS_DIR
+    train_path = Path(train_path)
+    out_dir = Path(out_dir)
     if not train_path.is_file():
         raise FileNotFoundError(f"Train CSV not found: {train_path}")
 
-    out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(train_path)

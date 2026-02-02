@@ -20,8 +20,9 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SPLITS_DIR = PROJECT_ROOT / "processed" / "features" / "iemocap" / "splits"
-TUNING_DIR = PROJECT_ROOT / "processed" / "tuning"
+DEFAULT_OUTPUT = PROJECT_ROOT
+SPLITS_DIR = DEFAULT_OUTPUT / "features" / "iemocap" / "splits"
+MODELS_DIR = DEFAULT_OUTPUT / "models"
 
 NON_FEATURE_COLS = ["label", "file_path", "dataset"]
 
@@ -73,20 +74,29 @@ def get_estimators(seed: int):
 
 def main():
     parser = argparse.ArgumentParser(description="Hyperparameter tuning (RandomizedSearchCV, F1-weighted)")
-    parser.add_argument("--train-csv", type=Path, default=SPLITS_DIR / "80_20" / "train.csv")
-    parser.add_argument("--out-dir", type=Path, default=TUNING_DIR)
+    parser.add_argument("--workflow-dir", type=Path, default=None, help="Workflow output root; uses <workflow-dir>/models/..., features/...")
+    parser.add_argument("--train-csv", type=Path, default=None)
+    parser.add_argument("--out-dir", type=Path, default=None)
     parser.add_argument("--models", type=str, nargs="+", default=None, help="e.g. rf xgb svm (default: all)")
     parser.add_argument("--n-iter", type=int, default=20, help="RandomizedSearchCV iterations per model")
     parser.add_argument("--cv", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--save-best-model", action="store_true", help="Save best estimator as .pkl per model")
+    parser.add_argument("--save-best-model", action="store_true", help="(Deprecated) Best models are always saved to out_dir as <name>.pkl")
     args = parser.parse_args()
 
-    train_path = Path(args.train_csv)
+    if args.workflow_dir is not None:
+        base = Path(args.workflow_dir).resolve()
+        train_path = args.train_csv or (base / "features" / "splits" / "80_20" / "train.csv")
+        out_dir = args.out_dir or (base / "models")
+    else:
+        train_path = args.train_csv or SPLITS_DIR / "80_20" / "train.csv"
+        out_dir = args.out_dir or MODELS_DIR
+    train_path = Path(train_path)
+    out_dir = Path(out_dir)
+
     if not train_path.is_file():
         raise FileNotFoundError(f"Train CSV not found: {train_path}")
 
-    out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(train_path)
@@ -138,16 +148,13 @@ def main():
 
         best_params = search.best_params_
         best_score = search.best_score_
-        out_sub = out_dir / name
-        out_sub.mkdir(parents=True, exist_ok=True)
 
-        with open(out_sub / "best_params.json", "w") as f:
+        with open(out_dir / f"{name}_best_params.json", "w") as f:
             json.dump({"best_params": best_params, "best_cv_f1_weighted": best_score}, f, indent=2)
 
         print(f"{name}: best F1 (weighted) = {best_score:.4f}, params = {best_params}")
 
-        if args.save_best_model:
-            joblib.dump(search.best_estimator_, out_sub / "best_model.pkl")
+        joblib.dump(search.best_estimator_, out_dir / f"{name}.pkl")
 
     # Save artifacts so train script can use same feature setup
     joblib.dump(scaler, out_dir / "scaler.pkl")
