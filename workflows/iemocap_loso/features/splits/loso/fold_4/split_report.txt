@@ -1,0 +1,18 @@
+LOSO fold 4 (test subject: Session5)
+==================================================
+
+Train: 4290  Test: 1241
+
+Train label distribution:
+  angry: 933 (21.7%)
+  happy: 1194 (27.8%)
+  neutral: 1324 (30.9%)
+  sad: 839 (19.6%)
+
+Test label distribution:
+  angry: 170 (13.7%)
+  happy: 442 (35.6%)
+  neutral: 384 (30.9%)
+  sad: 245 (19.7%)
+
+Normalized (StandardScaler fit on train). scaler.pkl saved.

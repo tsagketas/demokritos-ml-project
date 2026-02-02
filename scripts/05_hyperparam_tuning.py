@@ -56,7 +56,9 @@ PARAM_GRIDS = {
         "solver": ["lbfgs", "saga"],
         "max_iter": [500, 1000],
     },
-    "nb": {},  # GaussianNB has few tunable params; no grid or add var_smoothing
+    "nb": {
+        "var_smoothing": [1e-10, 1e-9, 1e-8, 1e-7, 1e-6],
+    },
 }
 
 # Base estimators (same as train script for consistency)
@@ -125,19 +127,15 @@ def main():
             print(f"Unknown model '{name}', skipping.")
             continue
         param_grid = PARAM_GRIDS.get(name, {})
-        if not param_grid and name != "nb":
+        if not param_grid:
             print(f"No param grid for '{name}', skipping.")
             continue
 
         base = estimators[name]
-        if name == "nb":
-            # Optional: tune var_smoothing
-            param_grid = {"var_smoothing": [1e-9, 1e-8, 1e-7]}
-
         search = RandomizedSearchCV(
             base,
             param_distributions=param_grid,
-            n_iter=min(args.n_iter, 1 if not param_grid else args.n_iter),
+            n_iter=args.n_iter,
             cv=cv,
             scoring="f1_weighted",
             n_jobs=-1,

@@ -1,0 +1,22 @@
+Evaluation report: dtr
+========================================
+
+Accuracy: 0.4257
+F1-score (weighted): 0.4306
+Precision (weighted): 0.4427
+Recall (weighted): 0.4257
+R²: -0.0158
+MSE: 1.2059
+RMSE: 1.0981
+MAE: 0.7732
+MAPE: 53.6200%
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+     95    87    51     7  | angry
+     44   119    80    43  | happy
+     53    91   130    46  | neutral
+     13    42   104   146  | sad
+  ------------------------
+  angry happy neutral   sad

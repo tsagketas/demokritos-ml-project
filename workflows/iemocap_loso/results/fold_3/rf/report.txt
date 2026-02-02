@@ -1,0 +1,22 @@
+Evaluation report: rf
+========================================
+
+Accuracy: 0.5228
+F1-score (weighted): 0.5260
+Precision (weighted): 0.5366
+Recall (weighted): 0.5228
+R²: 0.2315
+MSE: 0.8283
+RMSE: 0.9101
+MAE: 0.5897
+MAPE: 46.7022%
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    182    85    55     5  | angry
+     79   148    57    19  | happy
+     20    79   141    18  | neutral
+      2     8    65    68  | sad
+  ------------------------
+  angry happy neutral   sad

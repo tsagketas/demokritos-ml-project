@@ -1,0 +1,22 @@
+Evaluation report: xgb
+========================================
+
+Accuracy: 0.5504
+F1-score (weighted): 0.5445
+Precision (weighted): 0.5560
+Recall (weighted): 0.5504
+R²: 0.0728
+MSE: 0.8477
+RMSE: 0.9207
+MAE: 0.5753
+MAPE: 42.0897%
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    126    19    21     4  | angry
+     85   182   126    49  | happy
+     19    68   225    72  | neutral
+      9    41    45   150  | sad
+  ------------------------
+  angry happy neutral   sad
