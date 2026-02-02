@@ -9,6 +9,12 @@ Preprocess IEMOCAP, split with LOSO (normalized per fold), train and evaluate pe
 python workflows/iemocap_loso/work_iemocap_loso.py
 ```
 
+**Run with per-fold hyperparameter tuning** (RandomizedSearchCV per fold; slower but can improve metrics):
+```bash
+python workflows/iemocap_loso/work_iemocap_loso.py --tune
+python workflows/iemocap_loso/work_iemocap_loso.py --tune --n-iter 30 --cv 5   # optional: more iterations, CV folds
+```
+
 **Run full workflow in Docker:**
 ```bash
 docker exec mlproject-container python /workspace/workflows/iemocap_loso/work_iemocap_loso.py
@@ -17,7 +23,7 @@ docker exec mlproject-container python /workspace/workflows/iemocap_loso/work_ie
 **Steps:**
 1. Preprocess IEMOCAP (features CSV + report)
 2. Split LOSO (one fold per session: `features/splits/loso/fold_0/`, …)
-3. For each fold: train models → evaluate
+3. For each fold: train models (or run hyperparameter tuning if `--tune`) → evaluate
 4. Aggregate results → `results/loso_summary.txt` (mean ± std per model)
 
 **Outputs:**

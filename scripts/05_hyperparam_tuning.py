@@ -110,7 +110,7 @@ def main():
     scaler_path = split_dir / "scaler.pkl"
     if scaler_path.is_file():
         scaler = joblib.load(scaler_path)
-        X_scaled = X
+        X_scaled = scaler.transform(X)
     else:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)

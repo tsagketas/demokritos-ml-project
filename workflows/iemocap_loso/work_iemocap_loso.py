@@ -1,7 +1,9 @@
 """
-IEMOCAP LOSO workflow: preprocess → split (LOSO) → per-fold train → per-fold evaluate → aggregate.
+IEMOCAP LOSO workflow: preprocess → split (LOSO) → per-fold train [or tune] → per-fold evaluate → aggregate.
 Run from project root: python workflows/iemocap_loso/work_iemocap_loso.py
+Use --tune to run hyperparameter tuning per fold instead of fixed-param training (slower).
 """
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -22,6 +24,12 @@ def run(cmd, description):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="IEMOCAP LOSO workflow (optionally with per-fold hyperparameter tuning)")
+    parser.add_argument("--tune", action="store_true", help="Run hyperparameter tuning per fold instead of fixed-param training")
+    parser.add_argument("--n-iter", type=int, default=20, help="RandomizedSearchCV iterations per model when --tune (default: 20)")
+    parser.add_argument("--cv", type=int, default=5, help="CV folds for tuning when --tune (default: 5)")
+    args = parser.parse_args()
+
     py = sys.executable
 
     run(
@@ -49,15 +57,28 @@ def main():
         models_dir = str(WORKFLOW_DIR / "models" / fold_name)
         results_dir = str(WORKFLOW_DIR / "results" / fold_name)
 
-        run(
-            [
-                py, str(SCRIPTS / "03_train_models.py"),
-                "--workflow-dir", WDIR,
-                "--train-csv", train_csv,
-                "--out-dir", models_dir,
-            ],
-            f"3. Train models ({fold_name})",
-        )
+        if args.tune:
+            run(
+                [
+                    py, str(SCRIPTS / "05_hyperparam_tuning.py"),
+                    "--workflow-dir", WDIR,
+                    "--train-csv", train_csv,
+                    "--out-dir", models_dir,
+                    "--n-iter", str(args.n_iter),
+                    "--cv", str(args.cv),
+                ],
+                f"3. Hyperparameter tuning ({fold_name})",
+            )
+        else:
+            run(
+                [
+                    py, str(SCRIPTS / "03_train_models.py"),
+                    "--workflow-dir", WDIR,
+                    "--train-csv", train_csv,
+                    "--out-dir", models_dir,
+                ],
+                f"3. Train models ({fold_name})",
+            )
         run(
             [
                 py, str(SCRIPTS / "04_evaluate_models.py"),
