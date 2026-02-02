@@ -1,0 +1,24 @@
+Split report (stratified 80-20)
+==============================
+
+Total: 5531  Train: 4424  Test: 1107
+
+Label distribution (overall):
+  angry: 1103 (19.9%)
+  happy: 1636 (29.6%)
+  neutral: 1708 (30.9%)
+  sad: 1084 (19.6%)
+
+Train:
+  angry: 882 (19.9%)
+  happy: 1309 (29.6%)
+  neutral: 1366 (30.9%)
+  sad: 867 (19.6%)
+
+Test:
+  angry: 221 (20.0%)
+  happy: 327 (29.5%)
+  neutral: 342 (30.9%)
+  sad: 217 (19.6%)
+
+Train/test features normalized (StandardScaler fit on train). scaler.pkl saved.
