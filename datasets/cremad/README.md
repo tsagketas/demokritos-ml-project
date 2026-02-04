@@ -27,9 +27,9 @@ Crowd Sourced Emotional Multimodal Actors Dataset (CREMA-D)
 - **High**
 - **Unspecified**
 
-## Άδεια
+## License
 
-- [Open Data Commons Attribution License (ODC-By)](https://opendatacommons.org/licenses/by/1-0/index.html)
+Τα δεδομένα του CREMA-D διατίθενται με την άδεια ODC-By ([Open Data Commons Attribution License](https://opendatacommons.org/licenses/by/1-0/index.html)).
 
 ## Citation
 

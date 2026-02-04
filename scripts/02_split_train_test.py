@@ -5,6 +5,7 @@ import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT = PROJECT_ROOT
@@ -125,6 +126,63 @@ def _run_loso(df, out_dir, normalize, non_feature_cols):
         report_lines.append("Each fold: StandardScaler fit on train, transform train+test. scaler.pkl per fold.")
     with open(out_dir / "split_report.txt", "w") as f:
         f.write("\n".join(report_lines))
+
+
+def _run_pca(workflow_dir, n_components=None, seed=42):
+    workflow_dir = Path(workflow_dir)
+    
+    # Load IEMOCAP features
+    iemocap_csv = workflow_dir / "features" / "iemocap_features.csv"
+    if not iemocap_csv.is_file():
+        raise FileNotFoundError(f"IEMOCAP features not found: {iemocap_csv}")
+    df_iemocap = pd.read_csv(iemocap_csv)
+    
+    # Load CREMAD features
+    cremad_csv = workflow_dir / "features" / "cremad_features.csv"
+    if not cremad_csv.is_file():
+        raise FileNotFoundError(f"CREMAD features not found: {cremad_csv}")
+    df_cremad = pd.read_csv(cremad_csv)
+    
+    non_feature_cols = ["label", "file_path", "dataset"]
+    feature_cols = [c for c in df_iemocap.columns if c not in non_feature_cols]
+    
+    # Normalize both datasets
+    scaler = StandardScaler()
+    df_iemocap_norm = df_iemocap.copy()
+    df_iemocap_norm[feature_cols] = scaler.fit_transform(df_iemocap_norm[feature_cols])
+    df_cremad_norm = df_cremad.copy()
+    df_cremad_norm[feature_cols] = scaler.transform(df_cremad_norm[feature_cols])
+    
+    # Apply PCA (fit on IEMOCAP, transform both)
+    pca = PCA(n_components=n_components, random_state=seed)
+    pca_features_iemocap = pca.fit_transform(df_iemocap_norm[feature_cols])
+    pca_features_cremad = pca.transform(df_cremad_norm[feature_cols])
+    
+    # Create PCA DataFrames
+    pca_cols = [f"pca_{i}" for i in range(pca_features_iemocap.shape[1])]
+    df_iemocap_pca = pd.DataFrame(pca_features_iemocap, columns=pca_cols)
+    df_iemocap_pca["label"] = df_iemocap["label"]
+    df_iemocap_pca["file_path"] = df_iemocap["file_path"]
+    df_iemocap_pca["dataset"] = df_iemocap["dataset"]
+    
+    df_cremad_pca = pd.DataFrame(pca_features_cremad, columns=pca_cols)
+    df_cremad_pca["label"] = df_cremad["label"]
+    df_cremad_pca["file_path"] = df_cremad["file_path"]
+    df_cremad_pca["dataset"] = df_cremad["dataset"]
+    
+    # Save PCA features
+    features_dir = workflow_dir / "features"
+    features_dir.mkdir(parents=True, exist_ok=True)
+    df_iemocap_pca.to_csv(features_dir / "iemocap_pca_features.csv", index=False)
+    df_cremad_pca.to_csv(features_dir / "cremad_pca_features.csv", index=False)
+    
+    # Save scaler and PCA
+    joblib.dump(scaler, features_dir / "scaler.pkl")
+    joblib.dump(pca, features_dir / "pca.pkl")
+    
+    # Split IEMOCAP PCA features into train/test
+    splits_dir = workflow_dir / "features" / "splits"
+    _run_stratified_80_20(df_iemocap_pca, splits_dir, test_size=0.2, seed=seed, normalize=False, non_feature_cols=non_feature_cols)
 
 
 def main():

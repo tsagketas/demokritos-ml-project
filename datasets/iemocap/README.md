@@ -40,7 +40,7 @@ Interactive Emotional Dyadic Motion Capture (IEMOCAP) Dataset
 - **agreement** — Πόσοι από τους annotators συμφώνησαν μεταξύ τους
 - **path** — Διαδρομή προς το αρχείο ήχου
 
-## Άδεια
+## License
 
 ⚠️ Τα δεδομένα του IEMOCAP **δεν είναι ανοιχτά**.  
 Απαιτείται άδεια από το *Speech Analysis and Interpretation Laboratory* (SAIL) 
