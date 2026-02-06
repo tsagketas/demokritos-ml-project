@@ -1,0 +1,17 @@
+One-shot evaluation report: logistic
+========================================
+
+Accuracy: 0.3894
+F1-score (weighted): 0.3803
+Precision (weighted): 0.4688
+Recall (weighted): 0.3894
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    737   418   104    12  | angry
+    357   675   181    58  | happy
+    156   613   260    58  | neutral
+     54   852   129   236  | sad
+  ------------------------
+  angry happy neutral   sad

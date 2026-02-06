@@ -23,14 +23,14 @@ def run(cmd, description):
 
 def main():
     py = sys.executable
-    # run(
-    #     [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
-    #     "1. Preprocess IEMOCAP",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR],
-    #     "3. Split 80-20 (raw features, no normalize)",
-    # )
+    run(
+        [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
+        "1. Preprocess IEMOCAP",
+    )
+    run(
+        [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR],
+        "3. Split 80-20 (raw features, no normalize)",
+    )
     run(
         [
             py,

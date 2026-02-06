@@ -1,0 +1,17 @@
+One-shot evaluation report: dtr
+========================================
+
+Accuracy: 0.3745
+F1-score (weighted): 0.3769
+Precision (weighted): 0.4292
+Recall (weighted): 0.3745
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    451   418   387    15  | angry
+    332   349   521    69  | happy
+    112   191   619   165  | neutral
+     53   178   624   416  | sad
+  ------------------------
+  angry happy neutral   sad

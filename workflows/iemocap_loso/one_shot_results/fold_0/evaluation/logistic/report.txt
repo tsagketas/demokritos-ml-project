@@ -1,0 +1,17 @@
+One-shot evaluation report: logistic
+========================================
+
+Accuracy: 0.3667
+F1-score (weighted): 0.3453
+Precision (weighted): 0.4471
+Recall (weighted): 0.3667
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    802   339   121     9  | angry
+    377   647   204    43  | happy
+    135   702   211    39  | neutral
+     41  1009    84   137  | sad
+  ------------------------
+  angry happy neutral   sad

@@ -11,7 +11,7 @@ Expected one-shot CSV format:
       - file_path / dataset: kept in the saved prediction outputs
 
 Outputs:
-  <workflow-dir>/one_shot_results/   (REPLACED each run)
+  <workflow-dir>/one_shot_results/   (REPLACED each run unless --out-dir is set)
     - one_shot_input_raw.csv (copy of input)
     - one_shot_features_used.csv (features actually fed to models; scaled unless --one-shot-already-normalized)
     - predictions_<model>.csv
@@ -51,6 +51,7 @@ def main():
         help="If set, do NOT apply the workflow scaler to the one-shot features before predicting/evaluating.",
     )
     parser.add_argument("--models-dir", type=Path, default=None, help="Override models dir (default: <workflow-dir>/models)")
+    parser.add_argument("--out-dir", type=Path, default=None, help="Override output dir (default: <workflow-dir>/one_shot_results)")
     parser.add_argument("--skip-eval", action="store_true", help="Skip evaluation step even if labels exist.")
     args = parser.parse_args()
 
@@ -133,7 +134,7 @@ def main():
         missing = []  # satisfied
 
     # Prepare output directory
-    out_dir = workflow_dir / "one_shot_results"
+    out_dir = Path(args.out_dir or (workflow_dir / "one_shot_results")).resolve()
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

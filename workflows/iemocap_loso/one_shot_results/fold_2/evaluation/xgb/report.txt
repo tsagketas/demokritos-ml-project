@@ -1,0 +1,17 @@
+One-shot evaluation report: xgb
+========================================
+
+Accuracy: 0.5200
+F1-score (weighted): 0.5134
+Precision (weighted): 0.5467
+Recall (weighted): 0.5200
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    905   219   136    11  | angry
+    453   329   434    55  | happy
+     86   176   700   125  | neutral
+     38    99   520   614  | sad
+  ------------------------
+  angry happy neutral   sad

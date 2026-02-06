@@ -1,0 +1,17 @@
+One-shot evaluation report: svm
+========================================
+
+Accuracy: 0.5180
+F1-score (weighted): 0.5014
+Precision (weighted): 0.5830
+Recall (weighted): 0.5180
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    882   105   278     6  | angry
+    401   244   575    51  | happy
+     79    68   858    82  | neutral
+     38    69   610   554  | sad
+  ------------------------
+  angry happy neutral   sad

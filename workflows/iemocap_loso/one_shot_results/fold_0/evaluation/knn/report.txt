@@ -1,0 +1,17 @@
+One-shot evaluation report: knn
+========================================
+
+Accuracy: 0.4641
+F1-score (weighted): 0.4506
+Precision (weighted): 0.4700
+Recall (weighted): 0.4641
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    505   358   365    43  | angry
+    231   267   577   196  | happy
+     61   111   480   435  | neutral
+     25    57   167  1022  | sad
+  ------------------------
+  angry happy neutral   sad

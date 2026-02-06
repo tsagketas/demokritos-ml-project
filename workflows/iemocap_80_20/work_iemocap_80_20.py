@@ -28,8 +28,8 @@ def main():
     parser.add_argument(
         "--one-shot-csv",
         type=str,
-        default=None,
-        help="Optional: run one-shot predict+eval at the end using this CSV path.",
+        default=str(PROJECT_ROOT / "cremad_zero_shot_dataset" / "cremad_features.csv"),
+        help="One-shot CSV to evaluate at the end (default: CREMAD features).",
     )
     parser.add_argument(
         "--one-shot-already-normalized",
@@ -39,36 +39,42 @@ def main():
     args = parser.parse_args()
 
     py = sys.executable
-    # run(
-    #     [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
-    #     "1. Preprocess IEMOCAP",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR, "--normalize"],
-    #     "2. Split 80-20 (stratified, normalized)",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR],
-    #     "3. Train models",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
-    #     "4. Evaluate models",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "05_hyperparam_tuning.py"), "--workflow-dir", WDIR],
-    #     "5. Hyperparameter tuning (saves to models/)",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
-    #     "6. Evaluate (tuned models in models/)",
-    # )
+    run(
+        [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
+        "1. Preprocess IEMOCAP",
+    )
+    run(
+        [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR, "--normalize"],
+        "2. Split 80-20 (stratified, normalized)",
+    )
+    run(
+        [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR],
+        "3. Train models",
+    )
+    run(
+        [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
+        "4. Evaluate models",
+    )
+    run(
+        [py, str(SCRIPTS / "05_hyperparam_tuning.py"), "--workflow-dir", WDIR],
+        "5. Hyperparameter tuning (saves to models/)",
+    )
+    run(
+        [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
+        "6. Evaluate (tuned models in models/)",
+    )
 
-    if args.one_shot_csv:
-        cmd = [py, str(SCRIPTS / "08_one_shot_predict_eval.py"), "--workflow-dir", WDIR, "--one-shot-csv", args.one_shot_csv]
-        if args.one_shot_already_normalized:
-            cmd.append("--one-shot-already-normalized")
-        run(cmd, "7. One-shot predict + evaluate (saved to one_shot_results/)")
+    cmd = [
+        py,
+        str(SCRIPTS / "08_one_shot_predict_eval.py"),
+        "--workflow-dir",
+        WDIR,
+        "--one-shot-csv",
+        args.one_shot_csv,
+    ]
+    if args.one_shot_already_normalized:
+        cmd.append("--one-shot-already-normalized")
+    run(cmd, "7. One-shot predict + evaluate (saved to one_shot_results/)")
     print("\n--- Workflow done ---")
     print(f"Outputs: {WORKFLOW_DIR} (features/, models/, results/, tuning/)")
 
