@@ -38,6 +38,27 @@ docker-compose up --build -d
 
 ## Χρήση
 
+## Δομή datasets (IEMOCAP / CREMA-D)
+
+Τα scripts περιμένουν τα datasets κάτω από `datasets/`:
+
+```
+datasets/
+  cremad/
+    AudioWAV/
+      *.wav
+  iemocap/
+    iemocap_full_dataset.csv
+    Session1/...
+    Session2/...
+    Session3/...
+    Session4/...
+    Session5/...
+```
+
+Στο `iemocap_full_dataset.csv` πρέπει να υπάρχει στήλη `path` με relative paths
+προς το `datasets/iemocap/` (π.χ. `Session1/sentences/wav/...`).
+
 ### Εκτέλεση Python Script
 
 Για να τρέξετε ένα Python script μέσα στο container:
