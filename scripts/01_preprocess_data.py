@@ -236,6 +236,13 @@ def main():
     group.add_argument("--cremad", action="store_true", help="Run for CREMA-D dataset")
     group.add_argument("--iemocap", action="store_true", help="Run for IEMOCAP dataset")
     parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="Write outputs directly into this directory (no extra subfolders). "
+             "Example: --output-dir datasets/cremad_zero_shot_dataset",
+    )
+    parser.add_argument(
         "--workflow-dir",
         type=Path,
         default=None,
@@ -243,13 +250,15 @@ def main():
     )
     args = parser.parse_args()
 
-    if args.workflow_dir is not None:
+    if args.output_dir is not None:
+        output_base = Path(args.output_dir)
+        flat_features = True  # write directly into output_base
+    elif args.workflow_dir is not None:
         output_base = Path(args.workflow_dir) / "features"
+        flat_features = True  # workflow: features/* directly, no dataset subfolder
     else:
         output_base = PROJECT_ROOT / "features"
     output_base = output_base.resolve()
-
-    flat_features = args.workflow_dir is not None  # workflow: features/* directly, no dataset subfolder
     if args.cremad:
         extract_features_for_dataset("cremad", output_base, flat=flat_features)
     else:
