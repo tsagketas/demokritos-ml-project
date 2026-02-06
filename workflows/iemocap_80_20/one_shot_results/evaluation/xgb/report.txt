@@ -1,15 +1,10 @@
-Evaluation report: xgb
+One-shot evaluation report: xgb
 ========================================
 
 Accuracy: 0.5222
 F1-score (weighted): 0.5248
 Precision (weighted): 0.5520
 Recall (weighted): 0.5222
-R²: 0.3539
-MSE: 0.8316
-RMSE: 0.9119
-MAE: 0.5908
-MAPE: 42.8844%
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']

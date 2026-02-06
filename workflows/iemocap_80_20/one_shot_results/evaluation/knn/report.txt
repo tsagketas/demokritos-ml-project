@@ -1,15 +1,10 @@
-Evaluation report: knn
+One-shot evaluation report: knn
 ========================================
 
 Accuracy: 0.4882
 F1-score (weighted): 0.4760
 Precision (weighted): 0.4901
 Recall (weighted): 0.4882
-R²: 0.2253
-MSE: 0.9971
-RMSE: 0.9986
-MAE: 0.6653
-MAPE: 54.6259%
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']

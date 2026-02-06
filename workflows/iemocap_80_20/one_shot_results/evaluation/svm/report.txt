@@ -1,15 +1,10 @@
-Evaluation report: svm
+One-shot evaluation report: svm
 ========================================
 
 Accuracy: 0.5082
 F1-score (weighted): 0.5012
 Precision (weighted): 0.5600
 Recall (weighted): 0.5082
-R²: 0.2922
-MSE: 0.9110
-RMSE: 0.9545
-MAE: 0.6265
-MAPE: 43.2619%
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']

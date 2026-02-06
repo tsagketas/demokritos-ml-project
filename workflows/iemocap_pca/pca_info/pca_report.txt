@@ -1,0 +1,15 @@
+PCA report
+==========
+
+Fit on: IEMOCAP train split only (seed=42)
+Original feature dims: 136
+Requested n_components: 0.99
+Selected n_components_: 135
+Cumulative explained variance: 0.992647
+
+Artifacts:
+- pca_info/scaler.pkl
+- pca_info/pca.pkl
+- pca_info/pca_feature_cols.pkl
+- pca_info/explained_variance_ratio.csv
+- pca_info/cumulative_explained_variance.png

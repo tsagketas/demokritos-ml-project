@@ -1,0 +1,17 @@
+One-shot evaluation report: rf
+========================================
+
+Accuracy: 0.4569
+F1-score (weighted): 0.4540
+Precision (weighted): 0.5444
+Recall (weighted): 0.4569
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    651   375   238     7  | angry
+    283   389   564    35  | happy
+     63   145   810    69  | neutral
+     23    82   777   389  | sad
+  ------------------------
+  angry happy neutral   sad

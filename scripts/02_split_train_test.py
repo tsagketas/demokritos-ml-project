@@ -2,10 +2,14 @@ import argparse
 from pathlib import Path
 
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT = PROJECT_ROOT
@@ -128,61 +132,133 @@ def _run_loso(df, out_dir, normalize, non_feature_cols):
         f.write("\n".join(report_lines))
 
 
-def _run_pca(workflow_dir, n_components=None, seed=42):
+def _run_pca(
+    workflow_dir,
+    n_components=None,
+    seed=42,
+    variance_threshold=0.95,
+    train_csv=None,
+    test_csv=None,
+):
     workflow_dir = Path(workflow_dir)
-    
-    # Load IEMOCAP features
-    iemocap_csv = workflow_dir / "features" / "iemocap_features.csv"
-    if not iemocap_csv.is_file():
-        raise FileNotFoundError(f"IEMOCAP features not found: {iemocap_csv}")
-    df_iemocap = pd.read_csv(iemocap_csv)
-    
-    # Load CREMAD features
-    cremad_csv = workflow_dir / "features" / "cremad_features.csv"
-    if not cremad_csv.is_file():
-        raise FileNotFoundError(f"CREMAD features not found: {cremad_csv}")
-    df_cremad = pd.read_csv(cremad_csv)
-    
+
     non_feature_cols = ["label", "file_path", "dataset"]
-    feature_cols = [c for c in df_iemocap.columns if c not in non_feature_cols]
-    
-    # Normalize both datasets
+
+    # Default: operate on existing split train/test
+    splits_80_20 = workflow_dir / "features" / "splits" / "80_20"
+    train_csv = Path(train_csv) if train_csv is not None else (splits_80_20 / "train.csv")
+    test_csv = Path(test_csv) if test_csv is not None else (splits_80_20 / "test.csv")
+    if not train_csv.is_file():
+        raise FileNotFoundError(f"Train CSV not found for PCA: {train_csv}")
+    if not test_csv.is_file():
+        raise FileNotFoundError(f"Test CSV not found for PCA: {test_csv}")
+
+    df_train_raw = pd.read_csv(train_csv)
+    df_test_raw = pd.read_csv(test_csv)
+
+    feature_cols = [c for c in df_train_raw.columns if c not in non_feature_cols]
+    if not feature_cols:
+        raise ValueError("No feature columns found in train.csv (expected columns besides label/file_path/dataset).")
+    missing_in_test = [c for c in feature_cols if c not in df_test_raw.columns]
+    if missing_in_test:
+        raise ValueError(f"Test CSV missing {len(missing_in_test)} feature columns (examples: {missing_in_test[:10]})")
+
+    # --- Fit scaler + PCA on TRAIN only ---
     scaler = StandardScaler()
-    df_iemocap_norm = df_iemocap.copy()
-    df_iemocap_norm[feature_cols] = scaler.fit_transform(df_iemocap_norm[feature_cols])
-    df_cremad_norm = df_cremad.copy()
-    df_cremad_norm[feature_cols] = scaler.transform(df_cremad_norm[feature_cols])
-    
-    # Apply PCA (fit on IEMOCAP, transform both)
+    X_train_scaled = scaler.fit_transform(df_train_raw[feature_cols])
+    X_test_scaled = scaler.transform(df_test_raw[feature_cols])
+
+    if n_components is None:
+        n_components = variance_threshold
     pca = PCA(n_components=n_components, random_state=seed)
-    pca_features_iemocap = pca.fit_transform(df_iemocap_norm[feature_cols])
-    pca_features_cremad = pca.transform(df_cremad_norm[feature_cols])
+    X_train_pca = pca.fit_transform(X_train_scaled)
+    X_test_pca = pca.transform(X_test_scaled)
+
+    pca_cols = [f"pca_{i}" for i in range(X_train_pca.shape[1])]
+
+    df_train_pca = pd.DataFrame(X_train_pca, columns=pca_cols)
+    df_train_pca["label"] = df_train_raw["label"].values
+    df_train_pca["file_path"] = df_train_raw["file_path"].values
+    df_train_pca["dataset"] = df_train_raw["dataset"].values
+
+    df_test_pca = pd.DataFrame(X_test_pca, columns=pca_cols)
+    df_test_pca["label"] = df_test_raw["label"].values
+    df_test_pca["file_path"] = df_test_raw["file_path"].values
+    df_test_pca["dataset"] = df_test_raw["dataset"].values
+
+    # Save PCA artifacts + plots/info
+    pca_info_dir = workflow_dir / "pca_info"
+    pca_info_dir.mkdir(parents=True, exist_ok=True)
+
+    # scaler/pca are fit on IEMOCAP train only
+    joblib.dump(scaler, pca_info_dir / "scaler.pkl")
+    joblib.dump(pca, pca_info_dir / "pca.pkl")
+    joblib.dump(feature_cols, pca_info_dir / "pca_feature_cols.pkl")
+
+    # Save PCA explained variance report + plot
+    evr = np.array(getattr(pca, "explained_variance_ratio_", []), dtype=float)
+    if evr.size:
+        cumulative = np.cumsum(evr)
+        df_var = pd.DataFrame(
+            {
+                "component": np.arange(1, evr.size + 1),
+                "explained_variance_ratio": evr,
+                "cumulative_explained_variance": cumulative,
+            }
+        )
+        df_var.to_csv(pca_info_dir / "explained_variance_ratio.csv", index=False)
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.plot(df_var["component"], df_var["cumulative_explained_variance"], marker="o", linewidth=2)
+        ax.set_xlabel("Number of components")
+        ax.set_ylabel("Cumulative explained variance")
+        ax.set_title("PCA cumulative explained variance (fit on IEMOCAP train)")
+        ax.grid(True, alpha=0.3)
+        ax.set_ylim(0, 1.01)
+        plt.tight_layout()
+        fig.savefig(str(pca_info_dir / "cumulative_explained_variance.png"), dpi=150, bbox_inches="tight")
+        plt.close(fig)
+
+        with open(pca_info_dir / "pca_report.txt", "w") as f:
+            f.write("PCA report\n")
+            f.write("==========\n\n")
+            f.write(f"Fit on: IEMOCAP train split only (seed={seed})\n")
+            f.write(f"Original feature dims: {len(feature_cols)}\n")
+            f.write(f"Requested n_components: {n_components}\n")
+            f.write(f"Selected n_components_: {getattr(pca, 'n_components_', 'unknown')}\n")
+            f.write(f"Cumulative explained variance: {float(cumulative[-1]):.6f}\n")
+            f.write("\nArtifacts:\n")
+            f.write(f"- pca_info/scaler.pkl\n- pca_info/pca.pkl\n- pca_info/pca_feature_cols.pkl\n")
+            f.write(f"- pca_info/explained_variance_ratio.csv\n- pca_info/cumulative_explained_variance.png\n")
     
-    # Create PCA DataFrames
-    pca_cols = [f"pca_{i}" for i in range(pca_features_iemocap.shape[1])]
-    df_iemocap_pca = pd.DataFrame(pca_features_iemocap, columns=pca_cols)
-    df_iemocap_pca["label"] = df_iemocap["label"]
-    df_iemocap_pca["file_path"] = df_iemocap["file_path"]
-    df_iemocap_pca["dataset"] = df_iemocap["dataset"]
-    
-    df_cremad_pca = pd.DataFrame(pca_features_cremad, columns=pca_cols)
-    df_cremad_pca["label"] = df_cremad["label"]
-    df_cremad_pca["file_path"] = df_cremad["file_path"]
-    df_cremad_pca["dataset"] = df_cremad["dataset"]
-    
-    # Save PCA features
-    features_dir = workflow_dir / "features"
-    features_dir.mkdir(parents=True, exist_ok=True)
-    df_iemocap_pca.to_csv(features_dir / "iemocap_pca_features.csv", index=False)
-    df_cremad_pca.to_csv(features_dir / "cremad_pca_features.csv", index=False)
-    
-    # Save scaler and PCA
-    joblib.dump(scaler, features_dir / "scaler.pkl")
-    joblib.dump(pca, features_dir / "pca.pkl")
-    
-    # Split IEMOCAP PCA features into train/test
-    splits_dir = workflow_dir / "features" / "splits"
-    _run_stratified_80_20(df_iemocap_pca, splits_dir, test_size=0.2, seed=seed, normalize=False, non_feature_cols=non_feature_cols)
+    # Backup the old split files (no PCA) and overwrite with PCA versions
+    out_dir = Path(train_csv).parent
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    train_old = out_dir / "train_old.csv"
+    test_old = out_dir / "test_old.csv"
+    # Overwrite backups each run to keep it simple
+    df_train_raw.to_csv(train_old, index=False)
+    df_test_raw.to_csv(test_old, index=False)
+
+    df_train_pca.to_csv(out_dir / "train.csv", index=False)
+    df_test_pca.to_csv(out_dir / "test.csv", index=False)
+
+    with open(out_dir / "split_report.txt", "w") as f:
+        f.write("Split report (existing 80-20) + PCA\n")
+        f.write("==================================\n\n")
+        f.write(f"Train: {len(df_train_pca)}  Test: {len(df_test_pca)}\n")
+        f.write(f"PCA components: {len(pca_cols)}  (requested: {n_components})\n")
+        if evr.size:
+            f.write(f"Cumulative explained variance: {float(np.cumsum(evr)[-1]):.6f}\n")
+        f.write("\nTrain:\n")
+        for lbl, cnt in pd.Series(df_train_pca["label"]).value_counts().sort_index().items():
+            pct = 100.0 * cnt / len(df_train_pca)
+            f.write(f"  {lbl}: {cnt} ({pct:.1f}%)\n")
+        f.write("\nTest:\n")
+        for lbl, cnt in pd.Series(df_test_pca["label"]).value_counts().sort_index().items():
+            pct = 100.0 * cnt / len(df_test_pca)
+            f.write(f"  {lbl}: {cnt} ({pct:.1f}%)\n")
 
 
 def main():

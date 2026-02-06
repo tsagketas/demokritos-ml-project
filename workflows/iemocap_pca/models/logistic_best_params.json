@@ -1,0 +1,8 @@
+{
+  "best_params": {
+    "solver": "lbfgs",
+    "max_iter": 500,
+    "C": 0.01
+  },
+  "best_cv_f1_weighted": 0.5680517990460715
+}

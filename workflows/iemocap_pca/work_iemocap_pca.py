@@ -23,33 +23,51 @@ def run(cmd, description):
 
 def main():
     py = sys.executable
+    # run(
+    #     [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
+    #     "1. Preprocess IEMOCAP",
+    # )
+    # run(
+    #     [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR],
+    #     "3. Split 80-20 (raw features, no normalize)",
+    # )
     run(
-        [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
-        "1. Preprocess IEMOCAP",
-    )
-    run(
-        [py, str(SCRIPTS / "01_preprocess_data.py"), "--cremad", "--workflow-dir", WDIR],
-        "2. Preprocess CREMAD",
-    )
-    run(
-        [py, str(SCRIPTS / "07_run_pca.py"), "--workflow-dir", WDIR],
-        "3. PCA and split 80-20",
+        [
+            py,
+            str(SCRIPTS / "07_run_pca.py"),
+            "--workflow-dir",
+            WDIR,
+            "--variance-threshold",
+            "0.99",
+        ],
+        "4. PCA on TRAIN only (overwrite train/test; backups to *_old.csv; pca_info/)",
     )
     run(
         [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR],
-        "4. Train models",
+        "5. Train models",
     )
     run(
         [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
-        "5. Evaluate models",
+        "6. Evaluate models",
     )
     run(
         [py, str(SCRIPTS / "05_hyperparam_tuning.py"), "--workflow-dir", WDIR],
-        "6. Hyperparameter tuning (saves to models/)",
+        "7. Hyperparameter tuning (saves to models/)",
     )
     run(
         [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
-        "7. Evaluate (tuned models in models/)",
+        "8. Evaluate (tuned models in models/)",
+    )
+    run(
+        [
+            py,
+            str(SCRIPTS / "08_one_shot_predict_eval.py"),
+            "--workflow-dir",
+            WDIR,
+            "--one-shot-csv",
+            str(PROJECT_ROOT / "cremad_zero_shot_dataset" / "cremad_features.csv"),
+        ],
+        "9. Zero-shot (CREMAD as one-shot test)",
     )
 
 

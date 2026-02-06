@@ -1,15 +1,10 @@
-Evaluation report: nb
+One-shot evaluation report: nb
 ========================================
 
 Accuracy: 0.5429
 F1-score (weighted): 0.5135
 Precision (weighted): 0.5312
 Recall (weighted): 0.5429
-R²: 0.3790
-MSE: 0.7994
-RMSE: 0.8941
-MAE: 0.5639
-MAPE: 46.3367%
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']

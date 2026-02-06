@@ -1,15 +1,10 @@
-Evaluation report: logistic
+One-shot evaluation report: logistic
 ========================================
 
 Accuracy: 0.4437
 F1-score (weighted): 0.4439
 Precision (weighted): 0.5092
 Recall (weighted): 0.4437
-R²: 0.1110
-MSE: 1.1443
-RMSE: 1.0697
-MAE: 0.7463
-MAPE: 45.5408%
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']
