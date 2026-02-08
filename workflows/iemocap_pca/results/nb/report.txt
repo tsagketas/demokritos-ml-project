@@ -1,0 +1,25 @@
+Evaluation report: nb
+========================================
+
+Accuracy: 0.3930
+F1-score (weighted): 0.3814
+F1-score (macro): 0.3887
+UAR (Unweighted Average Recall): 0.4254
+Precision (weighted): 0.4465
+Recall (weighted): 0.3930
+
+Per-class metrics:
+  angry - Precision: 0.3924, Recall: 0.4208, F1: 0.4061
+  happy - Precision: 0.5105, Recall: 0.2966, F1: 0.3752
+  neutral - Precision: 0.5059, Recall: 0.2515, F1: 0.3359
+  sad - Precision: 0.3118, Recall: 0.7327, F1: 0.4374
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+     93    43    27    58  | angry
+     60    97    36   134  | happy
+     62    35    86   159  | neutral
+     22    15    21   159  | sad
+  ------------------------
+  angry happy neutral   sad

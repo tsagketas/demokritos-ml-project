@@ -1,0 +1,50 @@
+PCA Detailed Report
+===================
+Input features: 272
+Selected components: 205
+Total Variance Explained: 0.990266
+
+Top Components Analysis (Loadings):
+-----------------------------------
+
+Component 1 (Explains 21.84% var):
+  +0.1027 * delta mfcc_4_std
+  -0.0993 * mfcc_4_min
+  -0.0991 * mfcc_3_min
+  +0.0983 * delta mfcc_3_std
+  +0.0982 * delta mfcc_5_std
+
+Component 2 (Explains 10.51% var):
+  +0.1373 * zcr_min
+  -0.1364 * chroma_std_max
+  -0.1339 * chroma_7_max
+  -0.1337 * delta chroma_7_max
+  +0.1320 * spectral_rolloff_min
+
+Component 3 (Explains 4.68% var):
+  +0.1961 * spectral_centroid_std
+  +0.1946 * zcr_std
+  +0.1935 * spectral_rolloff_std
+  +0.1841 * delta zcr_std
+  +0.1575 * delta spectral_rolloff_std
+
+Component 4 (Explains 3.63% var):
+  +0.2316 * chroma_4_mean
+  +0.2225 * delta chroma_1_std
+  +0.2128 * chroma_1_mean
+  +0.2122 * delta chroma_4_std
+  +0.1972 * chroma_4_std
+
+Component 5 (Explains 3.22% var):
+  +0.1980 * chroma_10_mean
+  -0.1880 * chroma_5_mean
+  -0.1840 * delta chroma_5_std
+  -0.1716 * chroma_5_std
+  -0.1705 * chroma_6_mean
+
+Artifacts:
+- pca_info/scaler.pkl
+- pca_info/pca.pkl
+- pca_info/pca_feature_cols.pkl
+- pca_info/explained_variance_ratio.csv
+- pca_info/cumulative_explained_variance.png

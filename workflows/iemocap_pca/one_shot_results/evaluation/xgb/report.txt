@@ -1,0 +1,25 @@
+One-shot evaluation report: xgb
+========================================
+
+Accuracy: 0.4704
+F1-score (weighted): 0.4737
+F1-score (macro): 0.4716
+UAR (Unweighted Average Recall): 0.4719
+Precision (weighted): 0.4991
+Recall (weighted): 0.4704
+
+Per-class metrics:
+  angry - Precision: 0.5758, Recall: 0.6247, F1: 0.5992
+  happy - Precision: 0.3254, Recall: 0.2911, F1: 0.3073
+  neutral - Precision: 0.3533, Recall: 0.5106, F1: 0.4176
+  sad - Precision: 0.7208, Recall: 0.4611, F1: 0.5624
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    794   250   216    11  | angry
+    415   370   416    70  | happy
+    127   259   555   146  | neutral
+     43   258   384   586  | sad
+  ------------------------
+  angry happy neutral   sad

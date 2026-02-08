@@ -1,0 +1,6 @@
+{
+  "best_params": {
+    "var_smoothing": 1e-10
+  },
+  "best_cv_f1_weighted": 0.4685937121106319
+}

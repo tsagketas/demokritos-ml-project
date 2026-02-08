@@ -1,0 +1,25 @@
+One-shot evaluation report: dtr
+========================================
+
+Accuracy: 0.3820
+F1-score (weighted): 0.3897
+F1-score (macro): 0.3868
+UAR (Unweighted Average Recall): 0.3830
+Precision (weighted): 0.4144
+Recall (weighted): 0.3820
+
+Per-class metrics:
+  angry - Precision: 0.5460, Recall: 0.3965, F1: 0.4594
+  happy - Precision: 0.3343, Recall: 0.2785, F1: 0.3039
+  neutral - Precision: 0.2478, Recall: 0.4075, F1: 0.3082
+  sad - Precision: 0.5053, Recall: 0.4493, F1: 0.4756
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    504   367   351    49  | angry
+    269   354   475   173  | happy
+     88   219   443   337  | neutral
+     62   119   519   571  | sad
+  ------------------------
+  angry happy neutral   sad

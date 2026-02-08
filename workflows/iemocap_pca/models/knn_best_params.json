@@ -1,0 +1,7 @@
+{
+  "best_params": {
+    "weights": "uniform",
+    "n_neighbors": 15
+  },
+  "best_cv_f1_weighted": 0.5491016800838339
+}

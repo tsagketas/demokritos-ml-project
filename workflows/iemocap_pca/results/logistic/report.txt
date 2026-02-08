@@ -1,0 +1,25 @@
+Evaluation report: logistic
+========================================
+
+Accuracy: 0.5908
+F1-score (weighted): 0.5900
+F1-score (macro): 0.5961
+UAR (Unweighted Average Recall): 0.5979
+Precision (weighted): 0.5905
+Recall (weighted): 0.5908
+
+Per-class metrics:
+  angry - Precision: 0.6306, Recall: 0.6335, F1: 0.6321
+  happy - Precision: 0.5729, Recall: 0.5168, F1: 0.5434
+  neutral - Precision: 0.5702, Recall: 0.6053, F1: 0.5872
+  sad - Precision: 0.6079, Recall: 0.6359, F1: 0.6216
+
+Confusion matrix:
+Labels: ['angry', 'happy', 'neutral', 'sad']
+
+    140    40    38     3  | angry
+     53   169    70    35  | happy
+     19    65   207    51  | neutral
+     10    21    48   138  | sad
+  ------------------------
+  angry happy neutral   sad

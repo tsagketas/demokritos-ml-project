@@ -5,6 +5,7 @@ Best params and optional best model are saved. Docker-friendly.
 """
 import argparse
 import json
+import time
 from pathlib import Path
 
 import joblib
@@ -39,8 +40,8 @@ PARAM_GRIDS = {
         "learning_rate": [0.05, 0.1, 0.2],
     },
     "svm": {
-        "C": [0.1, 0.5, 1.0, 2.0],
-        "kernel": ["rbf", "poly"],
+        "C": [0.5, 1.0, 2.0],
+        "kernel": ["rbf"],
         "gamma": ["scale", "auto"],
     },
     "knn": {
@@ -84,6 +85,7 @@ def main():
     parser.add_argument("--cv", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--no-scale", action="store_true", help="Skip StandardScaler")
+    parser.add_argument("--verbose", type=int, default=1, help="RandomizedSearchCV verbosity (0=silent)")
     parser.add_argument("--save-best-model", action="store_true", help="(Deprecated) Best models are always saved to out_dir as <name>.pkl")
     args = parser.parse_args()
 
@@ -130,6 +132,9 @@ def main():
     model_names = list(args.models) if args.models else list(estimators.keys())
     cv = StratifiedKFold(n_splits=args.cv, shuffle=True, random_state=args.seed)
 
+    total_models = len([m for m in model_names if m in estimators])
+    print(f"Starting tuning: models={total_models}, cv={args.cv}, n_iter={args.n_iter}")
+
     for name in model_names:
         if name not in estimators:
             print(f"Unknown model '{name}', skipping.")
@@ -138,6 +143,14 @@ def main():
         if not param_grid:
             print(f"No param grid for '{name}', skipping.")
             continue
+
+        grid_size = 1
+        for values in param_grid.values():
+            grid_size *= len(values)
+        actual_iters = min(args.n_iter, grid_size) if grid_size > 0 else args.n_iter
+        total_fits = actual_iters * args.cv
+        print(f"\n[{name}] grid_size={grid_size}, iters={actual_iters}, total_fits={total_fits}")
+        start_ts = time.perf_counter()
 
         base = estimators[name]
         search = RandomizedSearchCV(
@@ -149,16 +162,19 @@ def main():
             n_jobs=-1,
             random_state=args.seed,
             refit=True,
+            verbose=args.verbose,
         )
         search.fit(X_scaled, y_enc)
 
         best_params = search.best_params_
         best_score = search.best_score_
+        elapsed = time.perf_counter() - start_ts
 
         with open(out_dir / f"{name}_best_params.json", "w") as f:
             json.dump({"best_params": best_params, "best_cv_f1_weighted": best_score}, f, indent=2)
 
         print(f"{name}: best F1 (weighted) = {best_score:.4f}, params = {best_params}")
+        print(f"[{name}] done in {elapsed:.1f}s")
 
         joblib.dump(search.best_estimator_, out_dir / f"{name}.pkl")
 
