@@ -70,9 +70,20 @@ def main():
     scaler_path = models_dir / "scaler.pkl"
     scaler = joblib.load(scaler_path) if scaler_path.is_file() else None
 
+    # Check if input data is already scaled (look for scaler in split dir)
+    split_dir = train_path.parent
+    split_scaler_path = split_dir / "scaler.pkl"
+    is_already_scaled = split_scaler_path.is_file()
+
     if scaler is not None:
-        X_train = scaler.transform(df_train[feature_cols])
-        X_test = scaler.transform(df_test[feature_cols])
+        if is_already_scaled:
+            print(f"Data appears already scaled (scaler found in {split_dir}). Using as-is.")
+            X_train = df_train[feature_cols]
+            X_test = df_test[feature_cols]
+        else:
+            print("Data appears raw. Applying model scaler.")
+            X_train = scaler.transform(df_train[feature_cols])
+            X_test = scaler.transform(df_test[feature_cols])
     else:
         # No scaler found or it's None (due to --no-scale)
         X_train = df_train[feature_cols]

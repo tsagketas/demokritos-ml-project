@@ -1,25 +1,25 @@
 Evaluation report: dtr
 ========================================
 
-Accuracy: 0.3962
-F1-score (weighted): 0.3846
-F1-score (macro): 0.3916
-UAR (Unweighted Average Recall): 0.4112
-Precision (weighted): 0.3923
-Recall (weighted): 0.3962
+Accuracy: 0.4257
+F1-score (weighted): 0.4306
+F1-score (macro): 0.4303
+UAR (Unweighted Average Recall): 0.4242
+Precision (weighted): 0.4427
+Recall (weighted): 0.4257
 
 Per-class metrics:
-  angry - Precision: 0.4233, Recall: 0.6667, F1: 0.5178
-  happy - Precision: 0.2795, Recall: 0.2902, F1: 0.2847
-  neutral - Precision: 0.3317, Recall: 0.2156, F1: 0.2614
-  sad - Precision: 0.5373, Recall: 0.4721, F1: 0.5026
+  angry - Precision: 0.4634, Recall: 0.3958, F1: 0.4270
+  happy - Precision: 0.3510, Recall: 0.4161, F1: 0.3808
+  neutral - Precision: 0.3562, Recall: 0.4062, F1: 0.3796
+  sad - Precision: 0.6033, Recall: 0.4787, F1: 0.5338
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']
 
-    160    44    25    11  | angry
-     99    83    55    49  | happy
-    100    87    69    64  | neutral
-     19    83    59   144  | sad
+     95    87    51     7  | angry
+     44   119    80    43  | happy
+     53    91   130    46  | neutral
+     13    42   104   146  | sad
   ------------------------
   angry happy neutral   sad

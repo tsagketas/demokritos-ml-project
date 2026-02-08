@@ -1,25 +1,25 @@
 Evaluation report: knn
 ========================================
 
-Accuracy: 0.3263
-F1-score (weighted): 0.3112
-F1-score (macro): 0.3274
-UAR (Unweighted Average Recall): 0.3803
-Precision (weighted): 0.3705
-Recall (weighted): 0.3263
+Accuracy: 0.4956
+F1-score (weighted): 0.4913
+F1-score (macro): 0.4959
+UAR (Unweighted Average Recall): 0.5061
+Precision (weighted): 0.5005
+Recall (weighted): 0.4956
 
 Per-class metrics:
-  angry - Precision: 0.2237, Recall: 0.6000, F1: 0.3259
-  happy - Precision: 0.4126, Recall: 0.1335, F1: 0.2017
-  neutral - Precision: 0.3543, Recall: 0.3672, F1: 0.3606
-  sad - Precision: 0.4221, Recall: 0.4204, F1: 0.4213
+  angry - Precision: 0.5252, Recall: 0.4294, F1: 0.4725
+  happy - Precision: 0.5231, Recall: 0.4095, F1: 0.4594
+  neutral - Precision: 0.4803, Recall: 0.5078, F1: 0.4937
+  sad - Precision: 0.4743, Recall: 0.6776, F1: 0.5580
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']
 
-    102    19    31    18  | angry
-    147    59   153    83  | happy
-    161    42   141    40  | neutral
-     46    23    73   103  | sad
+     73    61    26    10  | angry
+     48   181   142    71  | happy
+     12    74   195   103  | neutral
+      6    30    43   166  | sad
   ------------------------
   angry happy neutral   sad
