@@ -119,7 +119,10 @@ def main():
     elif scaler_path.is_file():
         print(f"Loading existing scaler from {scaler_path}")
         scaler = joblib.load(scaler_path)
-        X_scaled = scaler.transform(X)
+        # If scaler exists in split dir, the data in train.csv is likely already scaled.
+        # We should NOT transform it again.
+        print("Data appears already scaled. Using as-is.")
+        X_scaled = X
     else:
         print("Fitting new StandardScaler...")
         scaler = StandardScaler()

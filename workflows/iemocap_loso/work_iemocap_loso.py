@@ -39,10 +39,10 @@ def main():
     #     [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
     #     "1. Preprocess IEMOCAP",
     # )
-    # run(
-    #     [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR, "--split", "loso", "--normalize"],
-    #     "2. Split LOSO (Leave-One-Subject-Out, normalized)",
-    # )
+    run(
+        [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR, "--split", "loso", "--normalize"],
+        "2. Split LOSO (Leave-One-Subject-Out, normalized)",
+    )
 
     splits_loso = WORKFLOW_DIR / "features" / "splits" / "loso"
     if not splits_loso.is_dir():
