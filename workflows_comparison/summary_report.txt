@@ -1,0 +1,41 @@
+Workflow comparison — Macro AUC (one-vs-rest)
+==============================================
+
+What you are looking at
+------------------------
+This comparison evaluates how well each model discriminates between emotion
+classes (macro AUC) in three different evaluation setups:
+
+  • 80_20: Single 80/20 train/test split (IEMOCAP). One test set, one AUC per model.
+  • loso:  Leave-One-Subject-Out. One fold per left-out subject; AUC is computed
+           per fold and then averaged across folds (mean AUC per model).
+  • pca:   Same 80/20 split as 80_20 but features are PCA-transformed (reduced
+           dimensionality). One test set, one AUC per model.
+
+The table (auc_comparison.csv) has one row per model and one column per workflow.
+Higher AUC = better class separation. Empty/NaN means the model does not support
+probability outputs (e.g. SVM without probability=True), so AUC was not computed.
+
+Summary by workflow
+--------------------
+  80_20: best model = xgb (AUC = 0.8542); mean AUC over models = 0.7540.
+
+  loso: best model = rf (AUC = 0.7572); mean AUC over models = 0.6312.
+
+  pca: best model = svm (AUC = 0.8466); mean AUC over models = 0.7820.
+
+Summary by model
+----------------
+  rf: 80_20=0.822, loso=0.757, pca=0.805  → best in 80_20 (0.822)
+  xgb: 80_20=0.854, loso=0.738, pca=0.817  → best in 80_20 (0.854)
+  svm: 80_20=0.718, loso=—, pca=0.847  → best in pca (0.847)
+  knn: 80_20=0.628, loso=0.646, pca=0.803  → best in pca (0.803)
+  dtr: 80_20=0.712, loso=0.602, pca=0.714  → best in pca (0.714)
+  logistic: 80_20=0.791, loso=0.533, pca=0.829  → best in pca (0.829)
+  nb: 80_20=0.751, loso=0.512, pca=0.659  → best in 80_20 (0.751)
+
+Outputs
+--------
+  • auc_comparison.csv — table model × workflow with macro AUC values.
+  • roc_80_20.png, roc_pca.png, roc_loso.png — macro-averaged ROC curves per workflow (LOSO: mean over folds).
+  • summary_report.txt — this file.

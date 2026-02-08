@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Results: Zero-Shot Generalization</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        h1,
+        h2,
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-10 bg-white text-gray-800">
+        <!-- Header -->
+        <header class="mb-8 border-b-2 border-gray-200 pb-4 flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">Αποτελέσματα: Zero-Shot Generalization</h1>
+                <p class="text-xl text-gray-600 font-medium">Έλεγχος σε εξωτερικό dataset (CREMAD)</p>
+            </div>
+            <div class="bg-purple-50 px-4 py-2 rounded-lg border border-purple-100">
+                <span class="text-purple-800 font-semibold text-sm">Cross-Corpus</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col gap-8">
+            
+            <!-- Top Row: Key Metrics -->
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-gray-200 card-shadow">
+                    <h3 class="text-gray-600 text-sm font-semibold mb-1">Καλύτερη γενίκευση CREMAD</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-bold text-gray-900">Naive Bayes</span>
+                        <span class="text-gray-700 font-semibold">53.7%</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Μέση ακρίβεια (5 folds)</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-200 card-shadow">
+                    <h3 class="text-gray-600 text-sm font-semibold mb-1">Δεύτερο</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-bold text-gray-900">SVM</span>
+                        <span class="text-gray-700 font-semibold">51.9%</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Μέση ακρίβεια CREMAD</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-200 card-shadow">
+                    <h3 class="text-gray-600 text-sm font-semibold mb-1">Τρίτο</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-bold text-gray-900">XGBoost</span>
+                        <span class="text-gray-700 font-semibold">51.1%</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Μέση ακρίβεια CREMAD</p>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Detailed Analysis -->
+            <div class="grid grid-cols-2 gap-8 flex-1">
+                <!-- Table -->
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Zero-Shot Metrics (CREMAD Avg)</h3>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-300">
+                                <th class="text-left py-2 font-bold text-gray-600">Model</th>
+                                <th class="text-right py-2 font-bold text-gray-600">Accuracy</th>
+                                <th class="text-right py-2 font-bold text-gray-600">F1 (Weighted)</th>
+                                <th class="text-right py-2 font-bold text-gray-600">UAR</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="py-3 font-medium text-gray-900">Naive Bayes</td>
+                                <td class="text-right font-bold text-gray-900">53.7%</td>
+                                <td class="text-right text-gray-700">50.5%</td>
+                                <td class="text-right text-gray-700">53.7%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium text-gray-900">SVM</td>
+                                <td class="text-right font-bold text-gray-900">51.9%</td>
+                                <td class="text-right text-gray-700">50.3%</td>
+                                <td class="text-right text-gray-700">52.7%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium text-gray-900">XGBoost</td>
+                                <td class="text-right font-bold text-gray-900">51.1%</td>
+                                <td class="text-right text-gray-700">50.7%</td>
+                                <td class="text-right text-gray-700">51.3%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium">Random Forest</td>
+                                <td class="text-right text-gray-700">47.2%</td>
+                                <td class="text-right text-gray-700">44.5%</td>
+                                <td class="text-right text-gray-700">48.8%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium">KNN</td>
+                                <td class="text-right text-gray-700">47.1%</td>
+                                <td class="text-right text-gray-700">46.1%</td>
+                                <td class="text-right text-gray-700">47.1%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium">Logistic</td>
+                                <td class="text-right text-gray-700">38.6%</td>
+                                <td class="text-right text-gray-700">36.7%</td>
+                                <td class="text-right text-gray-700">38.0%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Insights -->
+                <div class="flex flex-col justify-center gap-4">
+                    <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-slate-500">
+                        <h4 class="font-bold text-gray-900 mb-1">Γενίκευση</h4>
+                        <p class="text-sm text-gray-700">
+                            Το Naive Bayes πετύχαινε τη μεγαλύτερη ακρίβεια στο CREMAD (53.7%) και βελτιώθηκε σε σχέση με το LOSO. Τα SVM και XGBoost, που ήταν καλύτερα στο IEMOCAP, διατηρούν αξιοπρεπή απόδοση και στο CREMAD (~51%).
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-slate-500">
+                        <h4 class="font-bold text-gray-900 mb-1">Συμπέρασμα</h4>
+                        <p class="text-sm text-gray-700">
+                            Για cross-corpus (άγνωστα δεδομένα) το Naive Bayes είναι η καλύτερη επιλογή. Για ισορροπημένη απόδοση και στα δύο datasets, SVM και XGBoost παραμένουν ισχυρές επιλογές.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

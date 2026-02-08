@@ -122,13 +122,28 @@ def evaluate_single_testset(workflow_dir: Path, test_csv: Path, models_dir: Path
     return auc_by_model
 
 
-def evaluate_loso(workflow_dir: Path):
+def _average_roc_curves(curves_per_fold, common_fpr=None):
+    """Interpolate each (fpr, tpr) to common_fpr and return (common_fpr, mean_tpr)."""
+    if common_fpr is None:
+        common_fpr = np.linspace(0, 1, 101)
+    tprs = []
+    for fpr, tpr in curves_per_fold:
+        tpr_interp = np.interp(common_fpr, fpr, tpr)
+        tpr_interp[0] = 0.0
+        tpr_interp[-1] = 1.0
+        tprs.append(tpr_interp)
+    mean_tpr = np.mean(tprs, axis=0)
+    return common_fpr, mean_tpr
+
+
+def evaluate_loso(workflow_dir: Path, make_plots: bool = False, plot_path: Path = None):
     splits_dir = workflow_dir / "features" / "splits" / "loso"
     fold_dirs = sorted(d for d in splits_dir.iterdir() if d.is_dir() and d.name.startswith("fold_"))
     if not fold_dirs:
         raise FileNotFoundError(f"No fold_* directories found under {splits_dir}")
 
     auc_by_model = {name: [] for name in MODEL_NAMES}
+    plot_curves_by_model = {name: [] for name in MODEL_NAMES} if make_plots else None
 
     for fold_dir in fold_dirs:
         test_csv = fold_dir / "test.csv"
@@ -166,6 +181,9 @@ def evaluate_loso(workflow_dir: Path):
                     average="macro",
                 )
                 auc_by_model[name].append(float(auc_val))
+                if make_plots and plot_curves_by_model is not None:
+                    fpr, tpr = macro_roc_curve(y_true_enc, proba, n_classes)
+                    plot_curves_by_model[name].append((fpr, tpr))
             except ValueError:
                 auc_by_model[name].append(np.nan)
 
@@ -173,7 +191,113 @@ def evaluate_loso(workflow_dir: Path):
     for name, vals in auc_by_model.items():
         vals = np.array(vals, dtype=float)
         mean_auc[name] = float(np.nanmean(vals)) if np.isfinite(vals).any() else np.nan
+
+    if make_plots and plot_path is not None and plot_curves_by_model is not None:
+        common_fpr = np.linspace(0, 1, 101)
+        fig, ax = plt.subplots(figsize=(8, 6))
+        for name in MODEL_NAMES:
+            curves = plot_curves_by_model.get(name, [])
+            if not curves:
+                continue
+            fpr_avg, tpr_avg = _average_roc_curves(curves, common_fpr)
+            auc_mean = mean_auc.get(name, np.nan)
+            if np.isfinite(auc_mean):
+                ax.plot(fpr_avg, tpr_avg, linewidth=2, label=f"{name} (AUC={auc_mean:.3f})")
+        ax.plot([0, 1], [0, 1], "k--", linewidth=1)
+        ax.set_xlabel("False Positive Rate")
+        ax.set_ylabel("True Positive Rate")
+        ax.set_title("Macro ROC (OVR): iemocap_loso (mean over folds)")
+        ax.legend(loc="lower right")
+        ax.grid(True, alpha=0.3)
+        plot_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(str(plot_path), dpi=150, bbox_inches="tight")
+        plt.close(fig)
+
     return mean_auc
+
+
+def write_summary_report(out_dir: Path, df: pd.DataFrame) -> None:
+    """Write a text summary report explaining the AUC comparison."""
+    out_path = out_dir / "summary_report.txt"
+    lines = [
+        "Workflow comparison — Macro AUC (one-vs-rest)",
+        "==============================================",
+        "",
+        "What you are looking at",
+        "------------------------",
+        "This comparison evaluates how well each model discriminates between emotion",
+        "classes (macro AUC) in three different evaluation setups:",
+        "",
+        "  • 80_20: Single 80/20 train/test split (IEMOCAP). One test set, one AUC per model.",
+        "  • loso:  Leave-One-Subject-Out. One fold per left-out subject; AUC is computed",
+        "           per fold and then averaged across folds (mean AUC per model).",
+        "  • pca:   Same 80/20 split as 80_20 but features are PCA-transformed (reduced",
+        "           dimensionality). One test set, one AUC per model.",
+        "",
+        "The table (auc_comparison.csv) has one row per model and one column per workflow.",
+        "Higher AUC = better class separation. Empty/NaN means the model does not support",
+        "probability outputs (e.g. SVM without probability=True), so AUC was not computed.",
+        "",
+        "Summary by workflow",
+        "--------------------",
+    ]
+
+    for col in ["80_20", "loso", "pca"]:
+        if col not in df.columns:
+            continue
+        s = df[col].replace("", np.nan).astype(float)
+        valid = s.dropna()
+        if len(valid) == 0:
+            lines.append(f"  {col}: no AUC values (all NaN).")
+        else:
+            best = valid.idxmax()
+            best_val = valid[best]
+            mean_auc = valid.mean()
+            lines.append(f"  {col}: best model = {best} (AUC = {best_val:.4f}); mean AUC over models = {mean_auc:.4f}.")
+        lines.append("")
+
+    lines.append("Summary by model")
+    lines.append("----------------")
+    for model in df.index:
+        row = df.loc[model]
+        vals = []
+        for c in ["80_20", "loso", "pca"]:
+            v = row.get(c)
+            if pd.isna(v) or v == "":
+                vals.append(f"{c}=—")
+            else:
+                try:
+                    vals.append(f"{c}={float(v):.3f}")
+                except (TypeError, ValueError):
+                    vals.append(f"{c}=—")
+        best_wf = None
+        best_auc = -1.0
+        for c in ["80_20", "loso", "pca"]:
+            v = row.get(c)
+            if v != "" and not pd.isna(v):
+                try:
+                    a = float(v)
+                    if a > best_auc:
+                        best_auc = a
+                        best_wf = c
+                except (TypeError, ValueError):
+                    pass
+        if best_wf is not None:
+            lines.append(f"  {model}: {', '.join(vals)}  → best in {best_wf} ({best_auc:.3f})")
+        else:
+            lines.append(f"  {model}: {', '.join(vals)}  (no AUC)")
+    lines.append("")
+
+    lines.extend([
+        "Outputs",
+        "--------",
+        "  • auc_comparison.csv — table model × workflow with macro AUC values.",
+        "  • roc_80_20.png, roc_pca.png, roc_loso.png — macro-averaged ROC curves per workflow (LOSO: mean over folds).",
+        "  • summary_report.txt — this file.",
+    ])
+
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Wrote: {out_path}")
 
 
 def main():
@@ -185,14 +309,15 @@ def main():
         help="Output directory for comparison CSV and plots.",
     )
     parser.add_argument(
-        "--plots",
+        "--no-plots",
         action="store_true",
-        help="Generate ROC plots for 80_20 and PCA workflows.",
+        help="Do not generate ROC plots (only CSV and summary report).",
     )
     args = parser.parse_args()
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    make_plots = not args.no_plots
 
     results = {name: {} for name in MODEL_NAMES}
 
@@ -203,7 +328,7 @@ def main():
         wf_80,
         test_80,
         models_80,
-        args.plots,
+        make_plots,
         out_dir / "roc_80_20.png",
     )
     for name in MODEL_NAMES:
@@ -216,14 +341,18 @@ def main():
         wf_pca,
         test_pca,
         models_pca,
-        args.plots,
+        make_plots,
         out_dir / "roc_pca.png",
     )
     for name in MODEL_NAMES:
         results[name]["pca"] = auc_pca.get(name, np.nan)
 
     wf_loso = WORKFLOW_DIRS["loso"]
-    auc_loso = evaluate_loso(wf_loso)
+    auc_loso = evaluate_loso(
+        wf_loso,
+        make_plots=make_plots,
+        plot_path=out_dir / "roc_loso.png",
+    )
     for name in MODEL_NAMES:
         results[name]["loso"] = auc_loso.get(name, np.nan)
 
@@ -233,6 +362,8 @@ def main():
     out_csv = out_dir / "auc_comparison.csv"
     df_out.to_csv(out_csv)
     print(f"Wrote: {out_csv}")
+
+    write_summary_report(out_dir, df_out)
 
 
 if __name__ == "__main__":

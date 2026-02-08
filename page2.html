@@ -47,24 +47,24 @@
 <body>
     <div class="slide-container p-10 bg-white text-gray-800">
         <!-- Header Section -->
-        <header class="mb-8 border-b-2 border-gray-200 pb-4 flex justify-between items-end">
+        <header class="mb-8 border-b-2 border-slate-300 pb-4 flex justify-between items-end">
             <div>
                 <h1 class="text-5xl font-extrabold text-gray-900 mb-2 tracking-tight">Πειραματικά Pipelines</h1>
                 <p class="text-xl text-gray-600 font-medium">Τρία σενάρια αξιολόγησης και βελτιστοποίησης</p>
             </div>
-            <div class="bg-gray-100 px-4 py-2 rounded-lg">
-                <span class="text-gray-700 font-semibold text-sm">Συγκριτική Μελέτη</span>
+            <div class="bg-indigo-50 px-4 py-2 rounded-lg border border-indigo-100">
+                <span class="text-indigo-800 font-semibold text-sm">Συγκριτική Μελέτη</span>
             </div>
         </header>
         <!-- Main Content: 3 Columns -->
         <div class="flex-1 grid grid-cols-3 gap-8 h-full pb-4">
             <!-- Pipeline 1: Random Split -->
-            <div class="bg-gray-50 rounded-2xl p-6 card-shadow flex flex-col h-full pipeline-card border-gray-300 relative overflow-hidden">
+            <div class="bg-slate-50 rounded-2xl p-6 card-shadow flex flex-col h-full pipeline-card border-t-4 border-indigo-400 relative overflow-hidden">
                 <div class="flex items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-900">1. Σενάριο 1</h2>
                 </div>
                 <div class="mb-4">
-                    <span class="inline-block bg-gray-200 text-gray-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2">80/20 Stratified</span>
+                    <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2">80/20 Stratified</span>
                     <p class="text-sm font-semibold text-gray-700">Baseline αξιολόγηση</p>
                 </div>
                 <ul class="list-disc list-inside space-y-3 text-sm text-gray-700 flex-1">
@@ -74,16 +74,16 @@
                     <li><strong>Step 4:</strong> Evaluate models.</li>
                     <li><strong>Step 5:</strong> Hyperparameter tuning.</li>
                     <li><strong>Step 6:</strong> Evaluate tuned models.</li>
-                    <li><strong>Step 7:</strong> One-shot predict + eval (CREMAD).</li>
+                    <li><strong>Step 7:</strong> Zero-shot predict + eval (CREMAD).</li>
                 </ul>
             </div>
             <!-- Pipeline 2: LOSO -->
-            <div class="bg-gray-50 rounded-2xl p-6 card-shadow flex flex-col h-full pipeline-card border-gray-300 relative overflow-hidden">
+            <div class="bg-slate-50 rounded-2xl p-6 card-shadow flex flex-col h-full pipeline-card border-t-4 relative overflow-hidden" style="border-top-color: #059669;">
                 <div class="flex items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-900">2. Σενάριο 2</h2>
                 </div>
                 <div class="mb-4">
-                    <span class="inline-block bg-gray-200 text-gray-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2">LOSO Strategy</span>
+                    <span class="inline-block text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2" style="background-color: #d1fae5; color: #047857;">LOSO Strategy</span>
                     <p class="text-sm font-semibold text-gray-700">Γενικεύση Προβλέψεων</p>
                 </div>
                 <ul class="list-disc list-inside space-y-3 text-sm text-gray-700 flex-1">
@@ -91,17 +91,17 @@
                     <li><strong>Step 2:</strong> LOSO split (folds).</li>
                     <li><strong>Step 3:</strong> Train/tune per fold.</li>
                     <li><strong>Step 4:</strong> Evaluate per fold.</li>
-                    <li><strong>Step 5:</strong> One-shot predict per fold.</li>
+                    <li><strong>Step 5:</strong> Zero-shot predict per fold.</li>
                     <li><strong>Step 6:</strong> Aggregate LOSO results.</li>
                 </ul>
             </div>
             <!-- Pipeline 3: PCA -->
-            <div class="bg-gray-50 rounded-2xl p-6 card-shadow flex flex-col h-full pipeline-card border-gray-300 relative overflow-hidden">
+            <div class="bg-slate-50 rounded-2xl p-6 card-shadow flex flex-col h-full pipeline-card border-t-4 relative overflow-hidden" style="border-top-color: #d97706;">
                 <div class="flex items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-900">3. Σενάριο 3</h2>
                 </div>
                 <div class="mb-4">
-                    <span class="inline-block bg-gray-200 text-gray-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2">PCA Optimization</span>
+                    <span class="inline-block text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2" style="background-color: #fef3c7; color: #b45309;">PCA Optimization</span>
                     <p class="text-sm font-semibold text-gray-700">Μείωση Διαστάσεων</p>
                 </div>
                 <ul class="list-disc list-inside space-y-3 text-sm text-gray-700 flex-1">
@@ -112,7 +112,7 @@
                     <li><strong>Step 5:</strong> Evaluate models.</li>
                     <li><strong>Step 6:</strong> Hyperparameter tuning.</li>
                     <li><strong>Step 7:</strong> Evaluate tuned models.</li>
-                    <li><strong>Step 8:</strong> One-shot (CREMAD).</li>
+                    <li><strong>Step 8:</strong> Zero-shot (CREMAD).</li>
                 </ul>
             </div>
         </div>
