@@ -39,22 +39,22 @@ def main():
     args = parser.parse_args()
 
     py = sys.executable
-    # run(
-    #     [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
-    #     "1. Preprocess IEMOCAP",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR, "--normalize"],
-    #     "2. Split 80-20 (stratified, normalized)",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR],
-    #     "3. Train models",
-    # )
-    # run(
-    #     [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
-    #     "4. Evaluate models",
-    # )
+    run(
+        [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
+        "1. Preprocess IEMOCAP",
+    )
+    run(
+        [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR, "--normalize"],
+        "2. Split 80-20 (stratified, normalized)",
+    )
+    run(
+        [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR],
+        "3. Train models",
+    )
+    run(
+        [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
+        "4. Evaluate models",
+    )
     run(
         [py, str(SCRIPTS / "05_hyperparam_tuning.py"), "--workflow-dir", WDIR],
         "5. Hyperparameter tuning (saves to models/)",

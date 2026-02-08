@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html lang="el">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Αρχιτεκτονική</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        h1,
+        h2,
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Custom scrollbar for overflow if needed, though we aim for fixed */
+        
+         ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container p-10 bg-white text-gray-800">
+        <!-- Header Section -->
+        <header class="mb-6 border-b-2 border-gray-200 pb-4">
+            <h1 class="text-5xl font-extrabold text-gray-900 mb-3 tracking-tight">Αρχιτεκτονική</h1>
+            <div class="flex items-center text-lg text-gray-700 bg-gray-100 p-3 rounded-lg border-l-4 border-gray-400">
+                <p class="font-medium">Modular σχεδιασμός: ξεχωρίζουμε την <span class="font-bold text-gray-900">κεντρική λογική (βήματα)</span> από τα <span class="font-bold text-gray-900">πειραματικά workflows</span>.</p>
+            </div>
+        </header>
+        <!-- Main Content Grid -->
+        <div class="flex-1 grid grid-cols-12 gap-8 h-full">
+            <!-- Left Column: Modular Logic (Span 7) -->
+            <div class="col-span-7 flex flex-col">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                    Modular Logic: Τα βήματα του workflow
+                </h2>
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 flex-1 flex flex-col justify-between shadow-sm">
+                    <ul class="list-disc list-inside space-y-3 text-sm text-gray-700">
+                        <li>
+                            <span class="font-bold text-gray-900">Προεπεξεργασία:</span>
+                            Καθαρισμός, κανονικοποίηση και προετοιμασία χαρακτηριστικών.
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Στρατηγικές Split:</span>
+                            Διαφορετικά splits (Hold-out, Cross-validation, LOSO).
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Εκπαίδευση:</span>
+                            Πολλαπλά μοντέλα (SVM, RF, XGB, κ.α.).
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Βελτιστοποίηση:</span>
+                            Fine-tuning υπερπαραμέτρων για καλύτερη απόδοση.
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Αξιολόγηση:</span>
+                            Μετρικές, πίνακες σύγχυσης και learning curves.
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Ανάλυση PCA:</span>
+                            Μείωση διαστάσεων για πιο ελαφρύ μοντέλο.
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Συγκριτική Αξιολόγηση:</span>
+                            Τελική σύγκριση όλων των workflows με AUC.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Right Column: Workflows (Span 5) -->
+            <div class="col-span-5 flex flex-col">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                    Workflows: Πειράματα
+                </h2>
+                <div class="flex-1 flex flex-col gap-4">
+                    <!-- Workflow 1 -->
+                    <div class="bg-gray-50 p-5 rounded-xl border-l-4 border-gray-300 card-shadow flex-1">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Pipeline Orchestration</h3>
+                        <ul class="list-disc list-inside text-sm text-gray-700 leading-relaxed">
+                            <li>Κάθε workflow συνθέτει τα βήματα σε ένα πλήρες, αυτοματοποιημένο σενάριο.</li>
+                            <li>Ενιαία ροή από preprocessing μέχρι αξιολόγηση, χωρίς χειροκίνητα κενά.</li>
+                            <li>Κοινές ρυθμίσεις και checkpoints για εύκολη επανάληψη.</li>
+                        </ul>
+                    </div>
+                    <!-- Workflow 2 -->
+                    <div class="bg-gray-50 p-5 rounded-xl border-l-4 border-gray-300 card-shadow flex-1">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Απομόνωση</h3>
+                        <ul class="list-disc list-inside text-sm text-gray-700 leading-relaxed">
+                            <li>Κάθε πείραμα έχει τη δική του δομή (features → models → results) για καθαρό διαχωρισμό.</li>
+                            <li>Δεν μπερδεύονται artifacts μεταξύ workflows (μοντέλα, reports, plots).</li>
+                            <li>Εύκολη διαχείριση και καθάρισμα ανά σενάριο.</li>
+                        </ul>
+                    </div>
+                    <!-- Workflow 3 -->
+                    <div class="bg-gray-50 p-5 rounded-xl border-l-4 border-gray-300 card-shadow flex-1">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Αναπαραγωγιμότητα</h3>
+                        <ul class="list-disc list-inside text-sm text-gray-700 leading-relaxed">
+                            <li>Σταθερά και επαληθεύσιμα αποτελέσματα με κοινή modular λογική.</li>
+                            <li>Ίδιοι seeds και ίδια βήματα σε κάθε run για δίκαιη σύγκριση.</li>
+                            <li>Εύκολος έλεγχος αλλαγών όταν πειράζουμε παραμέτρους.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

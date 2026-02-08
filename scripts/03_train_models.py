@@ -76,7 +76,7 @@ def main():
         "svm": SVC(C=0.5, kernel="rbf", gamma="scale", random_state=args.seed),
         "knn": KNeighborsClassifier(n_neighbors=15, weights="distance"),
         "dtr": DecisionTreeClassifier(max_depth=12, min_samples_leaf=5, random_state=args.seed),
-        "logistic": LogisticRegression(C=1.0, max_iter=1000, random_state=args.seed),
+        "logistic": LogisticRegression(C=1.0, max_iter=3000, random_state=args.seed),
         "nb": GaussianNB(),
     }
 
