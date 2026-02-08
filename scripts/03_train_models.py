@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--train-csv", type=Path, default=None)
     parser.add_argument("--out-dir", type=Path, default=None)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--no-scale", action="store_true", help="Skip StandardScaler (useful if data is already PCA-transformed and whitening is not desired)")
     args = parser.parse_args()
 
     if args.workflow_dir is not None:
@@ -52,10 +53,17 @@ def main():
 
     split_dir = train_path.parent
     scaler_path = split_dir / "scaler.pkl"
-    if scaler_path.is_file():
-        scaler = joblib.load(scaler_path)
+    
+    if args.no_scale:
+        print("Skipping scaling as requested (--no-scale).")
         X_scaled = X
+        scaler = None 
+    elif scaler_path.is_file():
+        print(f"Loading existing scaler from {scaler_path}")
+        scaler = joblib.load(scaler_path)
+        X_scaled = X # Assumed already scaled by the split/pca script
     else:
+        print("Fitting new StandardScaler...")
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
 

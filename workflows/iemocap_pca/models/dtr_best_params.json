@@ -1,7 +1,0 @@
-{
-  "best_params": {
-    "min_samples_leaf": 5,
-    "max_depth": 8
-  },
-  "best_cv_f1_weighted": 0.37250794796015424
-}

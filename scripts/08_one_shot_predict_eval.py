@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import (
     accuracy_score,
+    classification_report,
     confusion_matrix,
     f1_score,
     precision_score,
@@ -127,10 +128,8 @@ def main():
         X_pca = pca.transform(X_raw_scaled)
         X_pca_df = pd.DataFrame(X_pca, columns=feature_cols)
 
-        # Replace df_one with a view that contains the PCA columns needed for the model
-        df_one = df_one.copy()
-        for c in feature_cols:
-            df_one[c] = X_pca_df[c]
+        # Use pd.concat to avoid fragmentation warnings
+        df_one = pd.concat([df_one.drop(columns=[c for c in feature_cols if c in df_one.columns]), X_pca_df], axis=1)
         missing = []  # satisfied
 
     # Prepare output directory
@@ -143,7 +142,9 @@ def main():
     df_one.to_csv(out_dir / "one_shot_input_raw.csv", index=False)
 
     X_one_df = df_one[feature_cols]
-    if args.one_shot_already_normalized:
+    if args.one_shot_already_normalized or scaler is None:
+        if scaler is None and not args.one_shot_already_normalized:
+            print("Note: Scaler is None (no-scale mode), skipping one-shot scaling.")
         X_one_scaled = X_one_df
     else:
         X_one_scaled = scaler.transform(X_one_df)
@@ -204,8 +205,17 @@ def main():
 
         accuracy = accuracy_score(y_true_enc, y_pred_enc)
         f1 = f1_score(y_true_enc, y_pred_enc, average="weighted", zero_division=0)
+        f1_macro = f1_score(y_true_enc, y_pred_enc, average="macro", zero_division=0)
         precision = precision_score(y_true_enc, y_pred_enc, average="weighted", zero_division=0)
         recall = recall_score(y_true_enc, y_pred_enc, average="weighted", zero_division=0)
+        uar = recall_score(y_true_enc, y_pred_enc, average="macro", zero_division=0)
+        per_class = classification_report(
+            y_true_enc,
+            y_pred_enc,
+            target_names=class_names,
+            zero_division=0,
+            output_dict=True,
+        )
         cm = confusion_matrix(y_true_enc, y_pred_enc, labels=labels_enc)
 
         with open(eval_out / "report.txt", "w") as f:
@@ -213,8 +223,20 @@ def main():
             f.write("=" * 40 + "\n\n")
             f.write(f"Accuracy: {accuracy:.4f}\n")
             f.write(f"F1-score (weighted): {f1:.4f}\n")
+            f.write(f"F1-score (macro): {f1_macro:.4f}\n")
+            f.write(f"UAR (Unweighted Average Recall): {uar:.4f}\n")
             f.write(f"Precision (weighted): {precision:.4f}\n")
             f.write(f"Recall (weighted): {recall:.4f}\n\n")
+            f.write("Per-class metrics:\n")
+            for cls in class_names:
+                metrics = per_class.get(cls, {})
+                f.write(
+                    f"  {cls} - "
+                    f"Precision: {metrics.get('precision', 0.0):.4f}, "
+                    f"Recall: {metrics.get('recall', 0.0):.4f}, "
+                    f"F1: {metrics.get('f1-score', 0.0):.4f}\n"
+                )
+            f.write("\n")
             f.write("Confusion matrix:\n")
             f.write(f"Labels: {class_names}\n\n")
             for i, row in enumerate(cm):
@@ -247,6 +269,8 @@ def main():
                 "model": name,
                 "accuracy": accuracy,
                 "f1_weighted": f1,
+                "f1_macro": f1_macro,
+                "uar": uar,
                 "precision_weighted": precision,
                 "recall_weighted": recall,
             }

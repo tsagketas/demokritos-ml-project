@@ -15,6 +15,8 @@ RESULTS_DIR = PROJECT_ROOT / "results"
 METRIC_KEYS = [
     ("Accuracy:", "Accuracy"),
     ("F1-score (weighted):", "F1_weighted"),
+    ("F1-score (macro):", "F1_macro"),
+    ("UAR (Unweighted Average Recall):", "UAR"),
     ("Precision (weighted):", "Precision_weighted"),
     ("Recall (weighted):", "Recall_weighted"),
 ]

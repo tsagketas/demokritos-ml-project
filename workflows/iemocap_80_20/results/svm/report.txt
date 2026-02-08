@@ -1,22 +1,25 @@
 Evaluation report: svm
 ========================================
 
-Accuracy: 0.6125
-F1-score (weighted): 0.6125
-Precision (weighted): 0.6155
-Recall (weighted): 0.6125
-R²: 0.2756
-MSE: 0.7543
-RMSE: 0.8685
-MAE: 0.5050
-MAPE: 37.5489%
+Accuracy: 0.2954
+F1-score (weighted): 0.1347
+F1-score (macro): 0.1140
+UAR (Unweighted Average Recall): 0.2500
+Precision (weighted): 0.0873
+Recall (weighted): 0.2954
+
+Per-class metrics:
+  angry - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
+  happy - Precision: 0.2954, Recall: 1.0000, F1: 0.4561
+  neutral - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
+  sad - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']
 
-    139    35    44     3  | angry
-     42   180    75    30  | happy
-     18    58   220    46  | neutral
-      5    22    51   139  | sad
+      0   221     0     0  | angry
+      0   327     0     0  | happy
+      0   342     0     0  | neutral
+      0   217     0     0  | sad
   ------------------------
   angry happy neutral   sad

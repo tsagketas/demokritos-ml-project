@@ -11,12 +11,10 @@ import seaborn as sns
 from sklearn.base import clone
 from sklearn.metrics import (
     accuracy_score,
+    classification_report,
     confusion_matrix,
     f1_score,
-    mean_absolute_error,
-    mean_squared_error,
     precision_score,
-    r2_score,
     recall_score,
 )
 from sklearn.model_selection import learning_curve
@@ -29,11 +27,6 @@ TUNING_DIR = DEFAULT_OUTPUT / "tuning"
 RESULTS_DIR = DEFAULT_OUTPUT / "results"
 
 MODEL_NAMES = ["rf", "xgb", "svm", "knn", "dtr", "logistic", "nb"]
-
-
-def safe_mape(y_true, y_pred):
-    denom = np.where(y_true != 0, np.abs(y_true), 1)
-    return np.mean(np.abs((y_true - y_pred) / denom)) * 100
 
 
 def main():
@@ -72,15 +65,18 @@ def main():
 
     df_train = pd.read_csv(train_path)
     df_test = pd.read_csv(test_path)
-    split_dir = Path(test_path).parent
-    already_normalized = (split_dir / "scaler.pkl").is_file()
-    if already_normalized:
-        X_train = df_train[feature_cols]
-        X_test = df_test[feature_cols]
-    else:
-        scaler = joblib.load(models_dir / "scaler.pkl")
+    
+    # Load scaler from models_dir (the one saved during training)
+    scaler_path = models_dir / "scaler.pkl"
+    scaler = joblib.load(scaler_path) if scaler_path.is_file() else None
+
+    if scaler is not None:
         X_train = scaler.transform(df_train[feature_cols])
         X_test = scaler.transform(df_test[feature_cols])
+    else:
+        # No scaler found or it's None (due to --no-scale)
+        X_train = df_train[feature_cols]
+        X_test = df_test[feature_cols]
     y_train_enc = le.transform(df_train["label"])
     y_true = df_test["label"]
     y_true_enc = le.transform(y_true)
@@ -100,13 +96,17 @@ def main():
 
         accuracy = accuracy_score(y_true_enc, y_pred_enc)
         f1 = f1_score(y_true_enc, y_pred_enc, average="weighted", zero_division=0)
+        f1_macro = f1_score(y_true_enc, y_pred_enc, average="macro", zero_division=0)
         precision = precision_score(y_true_enc, y_pred_enc, average="weighted", zero_division=0)
         recall = recall_score(y_true_enc, y_pred_enc, average="weighted", zero_division=0)
-        r2 = r2_score(y_true_enc, y_pred_enc)
-        mse = mean_squared_error(y_true_enc, y_pred_enc)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_true_enc, y_pred_enc)
-        mape = safe_mape(y_true_enc, y_pred_enc)
+        uar = recall_score(y_true_enc, y_pred_enc, average="macro", zero_division=0)
+        per_class = classification_report(
+            y_true_enc,
+            y_pred_enc,
+            target_names=class_names,
+            zero_division=0,
+            output_dict=True,
+        )
         cm = confusion_matrix(y_true_enc, y_pred_enc, labels=labels_enc)
 
         out_dir = results_dir / name
@@ -117,13 +117,20 @@ def main():
             f.write("=" * 40 + "\n\n")
             f.write(f"Accuracy: {accuracy:.4f}\n")
             f.write(f"F1-score (weighted): {f1:.4f}\n")
+            f.write(f"F1-score (macro): {f1_macro:.4f}\n")
+            f.write(f"UAR (Unweighted Average Recall): {uar:.4f}\n")
             f.write(f"Precision (weighted): {precision:.4f}\n")
-            f.write(f"Recall (weighted): {recall:.4f}\n")
-            f.write(f"R²: {r2:.4f}\n")
-            f.write(f"MSE: {mse:.4f}\n")
-            f.write(f"RMSE: {rmse:.4f}\n")
-            f.write(f"MAE: {mae:.4f}\n")
-            f.write(f"MAPE: {mape:.4f}%\n\n")
+            f.write(f"Recall (weighted): {recall:.4f}\n\n")
+            f.write("Per-class metrics:\n")
+            for cls in class_names:
+                metrics = per_class.get(cls, {})
+                f.write(
+                    f"  {cls} - "
+                    f"Precision: {metrics.get('precision', 0.0):.4f}, "
+                    f"Recall: {metrics.get('recall', 0.0):.4f}, "
+                    f"F1: {metrics.get('f1-score', 0.0):.4f}\n"
+                )
+            f.write("\n")
             f.write("Confusion matrix:\n")
             f.write(f"Labels: {class_names}\n\n")
             for i, row in enumerate(cm):

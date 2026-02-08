@@ -56,43 +56,43 @@ def main():
     for fold_dir in fold_dirs:
         fold_name = fold_dir.name
         models_dir = str(WORKFLOW_DIR / "models" / fold_name)
-        # train_csv = str(fold_dir / "train.csv")
-        # test_csv = str(fold_dir / "test.csv")
-        # results_dir = str(WORKFLOW_DIR / "results" / fold_name)
+        train_csv = str(fold_dir / "train.csv")
+        test_csv = str(fold_dir / "test.csv")
+        results_dir = str(WORKFLOW_DIR / "results" / fold_name)
 
-        # if args.tune:
-        #     run(
-        #         [
-        #             py, str(SCRIPTS / "05_hyperparam_tuning.py"),
-        #             "--workflow-dir", WDIR,
-        #             "--train-csv", train_csv,
-        #             "--out-dir", models_dir,
-        #             "--n-iter", str(args.n_iter),
-        #             "--cv", str(args.cv),
-        #         ],
-        #         f"3. Hyperparameter tuning ({fold_name})",
-        #     )
-        # else:
-        #     run(
-        #         [
-        #             py, str(SCRIPTS / "03_train_models.py"),
-        #             "--workflow-dir", WDIR,
-        #             "--train-csv", train_csv,
-        #             "--out-dir", models_dir,
-        #         ],
-        #         f"3. Train models ({fold_name})",
-        #     )
-        # run(
-        #     [
-        #         py, str(SCRIPTS / "04_evaluate_models.py"),
-        #         "--workflow-dir", WDIR,
-        #         "--train-csv", train_csv,
-        #         "--test-csv", test_csv,
-        #         "--models-dir", models_dir,
-        #         "--results-dir", results_dir,
-        #     ],
-        #     f"4. Evaluate models ({fold_name})",
-        # )
+        if args.tune:
+            run(
+                [
+                    py, str(SCRIPTS / "05_hyperparam_tuning.py"),
+                    "--workflow-dir", WDIR,
+                    "--train-csv", train_csv,
+                    "--out-dir", models_dir,
+                    "--n-iter", str(args.n_iter),
+                    "--cv", str(args.cv),
+                ],
+                f"3. Hyperparameter tuning ({fold_name})",
+            )
+        else:
+            run(
+                [
+                    py, str(SCRIPTS / "03_train_models.py"),
+                    "--workflow-dir", WDIR,
+                    "--train-csv", train_csv,
+                    "--out-dir", models_dir,
+                ],
+                f"3. Train models ({fold_name})",
+            )
+        run(
+            [
+                py, str(SCRIPTS / "04_evaluate_models.py"),
+                "--workflow-dir", WDIR,
+                "--train-csv", train_csv,
+                "--test-csv", test_csv,
+                "--models-dir", models_dir,
+                "--results-dir", results_dir,
+            ],
+            f"4. Evaluate models ({fold_name})",
+        )
 
         one_shot_out_dir = str(WORKFLOW_DIR / "one_shot_results" / fold_name)
         cmd = [
@@ -104,17 +104,17 @@ def main():
         ]
         run(cmd, f"5. One-shot predictions ({fold_name})")
 
-    # run(
-    #     [py, str(SCRIPTS / "06_aggregate_loso_results.py"), "--workflow-dir", WDIR],
-    #     "6. Aggregate LOSO results (mean ± std)",
-    # )
+    run(
+        [py, str(SCRIPTS / "06_aggregate_loso_results.py"), "--workflow-dir", WDIR],
+        "6. Aggregate LOSO results (mean ± std)",
+    )
 
     print("\n--- LOSO workflow done ---")
     print(f"Outputs: {WORKFLOW_DIR}")
-    # print(f"  features/splits/loso/fold_*/  (train.csv, test.csv, scaler.pkl)")
-    # print(f"  models/fold_*/  (trained models per fold)")
-    # print(f"  results/fold_*/  (per-fold reports)")
-    # print(f"  results/loso_summary.txt  (aggregated metrics)")
+    print(f"  features/splits/loso/fold_*/  (train.csv, test.csv, scaler.pkl)")
+    print(f"  models/fold_*/  (trained models per fold)")
+    print(f"  results/fold_*/  (per-fold reports)")
+    print(f"  results/loso_summary.txt  (aggregated metrics)")
     print(f"  one_shot_results/fold_*/  (one-shot predictions per fold)")
 
 

@@ -23,10 +23,10 @@ def run(cmd, description):
 
 def main():
     py = sys.executable
-    run(
-        [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
-        "1. Preprocess IEMOCAP",
-    )
+    # run(
+    #     [py, str(SCRIPTS / "01_preprocess_data.py"), "--iemocap", "--workflow-dir", WDIR],
+    #     "1. Preprocess IEMOCAP",
+    # )
     run(
         [py, str(SCRIPTS / "02_split_train_test.py"), "--workflow-dir", WDIR],
         "3. Split 80-20 (raw features, no normalize)",
@@ -43,16 +43,16 @@ def main():
         "4. PCA on TRAIN only (overwrite train/test; backups to *_old.csv; pca_info/)",
     )
     run(
-        [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR],
-        "5. Train models",
+        [py, str(SCRIPTS / "03_train_models.py"), "--workflow-dir", WDIR, "--no-scale"],
+        "5. Train models (no-scale for PCA components)",
     )
     run(
         [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
         "6. Evaluate models",
     )
     run(
-        [py, str(SCRIPTS / "05_hyperparam_tuning.py"), "--workflow-dir", WDIR],
-        "7. Hyperparameter tuning (saves to models/)",
+        [py, str(SCRIPTS / "05_hyperparam_tuning.py"), "--workflow-dir", WDIR, "--no-scale"],
+        "7. Hyperparameter tuning (no-scale, saves to models/)",
     )
     run(
         [py, str(SCRIPTS / "04_evaluate_models.py"), "--workflow-dir", WDIR],
