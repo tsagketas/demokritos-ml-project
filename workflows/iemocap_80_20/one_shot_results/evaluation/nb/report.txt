@@ -1,25 +1,25 @@
 One-shot evaluation report: nb
 ========================================
 
-Accuracy: 0.2594
-F1-score (weighted): 0.1068
-F1-score (macro): 0.1030
-UAR (Unweighted Average Recall): 0.2500
-Precision (weighted): 0.0673
-Recall (weighted): 0.2594
+Accuracy: 0.5429
+F1-score (weighted): 0.5135
+F1-score (macro): 0.5121
+UAR (Unweighted Average Recall): 0.5438
+Precision (weighted): 0.5312
+Recall (weighted): 0.5429
 
 Per-class metrics:
-  angry - Precision: 0.2594, Recall: 1.0000, F1: 0.4119
-  happy - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
-  neutral - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
-  sad - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
+  angry - Precision: 0.6246, Recall: 0.6703, F1: 0.6467
+  happy - Precision: 0.4470, Recall: 0.1558, F1: 0.2310
+  neutral - Precision: 0.4094, Recall: 0.5676, F1: 0.4757
+  sad - Precision: 0.6261, Recall: 0.7813, F1: 0.6951
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']
 
-   1271     0     0     0  | angry
-   1271     0     0     0  | happy
-   1087     0     0     0  | neutral
-   1271     0     0     0  | sad
+    852   194   202    23  | angry
+    450   198   464   159  | happy
+     31    28   617   411  | neutral
+     31    23   224   993  | sad
   ------------------------
   angry happy neutral   sad

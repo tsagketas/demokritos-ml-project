@@ -1,25 +1,25 @@
 One-shot evaluation report: knn
 ========================================
 
-Accuracy: 0.2594
-F1-score (weighted): 0.1068
-F1-score (macro): 0.1030
-UAR (Unweighted Average Recall): 0.2500
-Precision (weighted): 0.0673
-Recall (weighted): 0.2594
+Accuracy: 0.4882
+F1-score (weighted): 0.4760
+F1-score (macro): 0.4736
+UAR (Unweighted Average Recall): 0.4892
+Precision (weighted): 0.4901
+Recall (weighted): 0.4882
 
 Per-class metrics:
-  angry - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
-  happy - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
-  neutral - Precision: 0.0000, Recall: 0.0000, F1: 0.0000
-  sad - Precision: 0.2594, Recall: 1.0000, F1: 0.4119
+  angry - Precision: 0.5944, Recall: 0.4854, F1: 0.5344
+  happy - Precision: 0.3673, Recall: 0.2014, F1: 0.2602
+  neutral - Precision: 0.3371, Recall: 0.5179, F1: 0.4084
+  sad - Precision: 0.6395, Recall: 0.7522, F1: 0.6913
 
 Confusion matrix:
 Labels: ['angry', 'happy', 'neutral', 'sad']
 
-      0     0     0  1271  | angry
-      0     0     0  1271  | happy
-      0     0     0  1087  | neutral
-      0     0     0  1271  | sad
+    617   286   338    30  | angry
+    314   256   533   168  | happy
+     76   107   563   341  | neutral
+     31    48   236   956  | sad
   ------------------------
   angry happy neutral   sad
