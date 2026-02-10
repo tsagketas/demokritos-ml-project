@@ -127,7 +127,15 @@
 | Naive Bayes (NB) | 0.4923 | 0.4780 | 0.4947 | 0.4923 | 0.7513 |
 | Decision Tree (DTR) | 0.4688 | 0.4680 | 0.4694 | 0.4688 | 0.7118 |
 
+![Accuracy](workflows/iemocap_80_20/results/Metrics_graphs/Accuracy.png)
+
 ![F1 Score Weighted](workflows/iemocap_80_20/results/Metrics_graphs/F1_score_weighted.png)
+
+![Precision Weighted](workflows/iemocap_80_20/results/Metrics_graphs/Precision_weighted.png)
+
+![Recall Weighted](workflows/iemocap_80_20/results/Metrics_graphs/Recall_weighted.png)
+
+![Confusion Matrix XGB](workflows/iemocap_80_20/results/xgb/confusion_matrix.png)
 
 **Ανάλυση ανά Μοντέλο:**
 *   **XGBoost: Κορυφαία επίδοση σε Accuracy και Macro AUC.**
@@ -157,6 +165,14 @@
 | Decision Tree (DTR) | 0.4734 | 0.4694 | 0.4761 | 0.4734 | 0.7145 |
 | Naive Bayes (NB) | 0.3930 | 0.3814 | 0.4465 | 0.3930 | 0.6587 |
 
+![Accuracy](workflows/iemocap_pca/results/Metrics_graphs/Accuracy.png)
+
+![F1 Score Weighted](workflows/iemocap_pca/results/Metrics_graphs/F1_score_weighted.png)
+
+![Precision Weighted](workflows/iemocap_pca/results/Metrics_graphs/Precision_weighted.png)
+
+![Recall Weighted](workflows/iemocap_pca/results/Metrics_graphs/Recall_weighted.png)
+
 **Ανάλυση ανά Μοντέλο:**
 *   **SVM & Logistic Regression: Τα γραμμικά μοντέλα έχουν την καλύτερη απόδοση.**
 *   **XGBoost & RF: Παρατηρείται μείωση ~4–6 μονάδων.**
@@ -182,6 +198,14 @@
 | Naive Bayes (NB) | 0.4795 | 0.4637 | 0.4810 | 0.4795 | 0.5117 |
 | Decision Tree (DTR) | 0.4367 | 0.4367 | 0.4457 | 0.4367 | 0.6020 |
 
+![Accuracy](workflows/iemocap_loso/results/Metrics_graphs/Accuracy.png)
+
+![F1 Score Weighted](workflows/iemocap_loso/results/Metrics_graphs/F1_score_weighted.png)
+
+![Precision Weighted](workflows/iemocap_loso/results/Metrics_graphs/Precision_weighted.png)
+
+![Recall Weighted](workflows/iemocap_loso/results/Metrics_graphs/Recall_weighted.png)
+
 **Ανάλυση ανά Μοντέλο:**
 *   **SVM & XGBoost:** Κατέχουν την πρώτη θέση (~56%). Το SVM δείχνει μια ελαφριά υπεροχή στο Precision, ενώ το XGBoost είναι αρκετά σταθερό. Η πτώση σε σχέση με το 80-20 είναι μικρή (~6%), αποδεικνύοντας ότι έχουν μάθει γενικεύσιμα χαρακτηριστικά.
 *   **Random Forest:** Πλησιάζει αρκτά τους πρώτους. Τα ensembles (RF, XGB) είναι γενικά πιο ανθεκτικά σε αλλαγές ομιλητών.
@@ -190,9 +214,15 @@
 
 ### 6.4 Σύγκριση workflows — AUC και ROC καμπύλες
 
-Για κάθε workflow υπολογίστηκε η Macro AUC (one-vs-rest) και σχεδιάστηκαν οι macro-averaged ROC κμπύλες. Οι γραφικές παραστάσεις βρίσκονται στον φάκελο workflows_comparison/.
+Για κάθε workflow υπολογίστηκε η Macro AUC (one-vs-rest) και σχεδιάστηκαν οι macro-averaged ROC καμπύλες, που απεικονίζουν την ικανότητα διάκρισης μεταξύ κλάσεων ανεξάρτητα από το threshold.
 
-Στο 80-20 η καλύτερη AUC είναι του XGBoost (0.8542), στο LOSO του Random Forest (0.7572) και στο PCA του SVM (0.8466). Για το SVM στο LOSO δεν υπάρχει διαθέσιμο AUC στα αρχεία σύγκρισης.
+![ROC Curve 80-20](workflows_comparison/roc_80_20.png)
+
+![ROC Curve PCA](workflows_comparison/roc_pca.png)
+
+![ROC Curve LOSO](workflows_comparison/roc_loso.png)
+
+Στο 80-20 η καλύτερη AUC είναι του XGBoost (0.8542), στο LOSO του Random Forest (0.7572) και στο PCA του SVM (0.8466). Το SVM στο LOSO δεν αναφέρεται σε AUC διότι σε αυτό το setup δεν υπολογίζονται πιθανότητες. Η σύγκριση επιβεβαιώνει ότι στο χώρο των PCA components τα γραμμικά μοντέλα (Logistic, SVM) επιτυγχάνουν πολύ καλή διάκριση (AUC > 0.82), ενώ στο 80-20 με πλήρη χαρακτηριστικά ξεχωρίζουν τα ensemble (XGB, RF).
 
 ---
 
@@ -202,11 +232,15 @@
 
 Ο τελικός έλεγχος αξιολογεί την ικανότητα των μοντέλων να λειτουργούν σε άγνωστο dataset.
 
-![Zero Shot Heatmap](workflows/iemocap_80_20/results/Metrics_graphs/Zero_shot_heatmap.png)
+![Zero Shot Heatmap - IEMOCAP 80-20](workflows/iemocap_80_20/results/Metrics_graphs/Zero_shot_heatmap.png)
 
-*   **Naive Bayes (54.29%): Κορυφαίο στο CREMA-D.**
-*   **XGBoost (52.22%): Καλή απόδοση, αλλά επηρεάζεται από το domain shift.**
-*   **SVM (50.82%): Πτώση σε σχέση με το IEMOCAP.**
+![Zero Shot Heatmap - IEMOCAP PCA](workflows/iemocap_pca/results/Metrics_graphs/Zero_shot_heatmap.png)
+
+![Zero Shot Heatmap - IEMOCAP LOSO](workflows/iemocap_loso/results/Metrics_graphs/Zero_shot_heatmap.png)
+
+*   **Naive Bayes (54.29%): Κορυφαίο στο CREMA-D.** Ενώ ήταν από τους χειρότερους στο IEMOCAP, στο CREMA-D είχε τις καλύτερες επιδόσεις. Η απλότητά του λειτούργησε ως πλεονέκτημα, αποφεύγοντας το overfitting στις ιδιαιτερότητες του IEMOCAP.
+*   **XGBoost (52.22%): Καλή απόδοση, αλλά επηρεάζεται από το domain shift.** Κράτησε καλή απόδοση, αλλά υπέφερε από το domain shift.
+*   **SVM (50.82%): Πτώση σε σχέση με το IEMOCAP.** Έπεσε σημαντικά, δείχνοντας ότι τα "όρια" που έμαθε στο IEMOCAP δεν μεταφράζονται τέλεια στο CREMA-D.
 
 
 ## 8. Συμπεράσματα
