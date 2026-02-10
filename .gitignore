@@ -9,4 +9,4 @@ workflows/iemocap_80_20/results/create_metrics_graphs.py
 workflows/iemocap_loso/results/create_metrics_graphs.py
 workflows/iemocap_pca/results/create_metrics_graphs.py
 # HTML presentation files
-*.html
+slide_*.html
