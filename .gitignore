@@ -10,3 +10,4 @@ workflows/iemocap_loso/results/create_metrics_graphs.py
 workflows/iemocap_pca/results/create_metrics_graphs.py
 # HTML presentation files
 slide_*.html
+html slides/compose_slides.py
