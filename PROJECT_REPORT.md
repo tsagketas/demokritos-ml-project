@@ -186,7 +186,7 @@
 
  Μοντέλα δοκιμάζονται σε άγνωστους ομιλητές (Cross-Validation).
 
-**Συγκεντρωτικός Πίνακας (Mean ± Std):**
+**Συγκεντρωτικός Πίνακας (Mean):**
 
 | Μοντέλο | Accuracy | F1 (Weighted) | Precision (Weighted) | Recall (Weighted) | Macro AUC (mean) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
