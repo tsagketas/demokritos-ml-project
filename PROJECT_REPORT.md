@@ -85,7 +85,7 @@
 2. **Split** — stratified διαχωρισμός 80-20 (Train 4.424, Test 1.107), κανονικοποίηση *(StandardScaler)* στο train και εφαρμογή στο test· αποθήκευση `scaler.pkl`.
 3. **Train** — Εκπαίδευση 7 ταξινομητών (RF, XGB, SVM, KNN, DTR, Logistic Regression, NB).
 4. **Evaluate** — Αξιολόγηση με τα ακόλουθα metrics: accuracy, F1, precision, recall, confusion matrix, learning curves.
-5. **Hyperparameter tuning** — RandomizedSearchCV (weighted F1), αποθήκευση best params και μοντέλων.
+5. **Hyperparameter tuning** — RandomizedSearchCV (weighted F1), αποθήκευση καλύτερων παραμέτρων και μοντέλων.
 6. **Τελικό Evaluation** — Αξιολόγηση με τα tuned μοντέλα.
 7. **Zero-Shot** —  Έλεγχος γενίκευσης του μοντέλου σε εξωτερικά datasets.
 
